@@ -1,3 +1,15 @@
+# Custom
+*/dot-env
+.DS_store
+*/log/*
+*.sock
+*.db-shm
+*.db-wal
+*.db
+test/
+test/*
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
