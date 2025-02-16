@@ -1,0 +1,6 @@
+- add slowapi for rate limiting
+- add oauth2 for authentication
+- add blocking for to many failed login attempts
+- add option to add every dot-env var as args
+- add different dot-env file name possibilities
+-
