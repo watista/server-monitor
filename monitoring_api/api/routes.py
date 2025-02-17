@@ -7,15 +7,19 @@ from services.monitoring import (
     check_disk,
     check_apt_updates,
     check_load,
-    check_memory
+    check_memory,
+    check_logged_in_users,
+    check_processes
 )
 from services.models import (
     MonitoringStatus,
     IPStatus,
-    DiskStatus,
+    DiskSpaceStatus,
     AptUpdateStatus,
     LoadStatus,
-    MemoryStatus
+    MemoryStatus,
+    LoggedInUsersStatus,
+    ProcessStatus
 )
 from config import config
 from services.logger import logger
@@ -36,8 +40,10 @@ async def get_status(user: dict = Depends(get_current_user_api_key)):
         public_ip=check_ip(),
         disk_space=check_disk(),
         apt_updates=check_apt_updates(),
-        load_status=get_load(),
-        memory_status=get_memory()
+        load_status=check_load(),
+        memory_status=check_memory(),
+        logged_in_user_status=check_logged_in_users(),
+        process_status=check_processes()
     )
 
     logger.info(f"User {user['username']} requested all system status")
@@ -51,7 +57,7 @@ async def get_ip(user: dict = Depends(get_current_user_api_key)):
     return check_ip()
 
 
-@router.get("/disk_check", response_model=DiskStatus)
+@router.get("/disk_check", response_model=DiskSpaceStatus)
 async def get_disk(user: dict = Depends(get_current_user_api_key)):
     """Return disk check in structured format."""
     logger.info(f"User {user['username']} requested disk check")
@@ -77,3 +83,17 @@ async def get_memory(user: dict = Depends(get_current_user_api_key)):
     """Return system memory status."""
     logger.info(f"User {user['username']} requested memory status")
     return check_memory()
+
+
+@router.get("/users_check", response_model=LoggedInUsersStatus)
+async def get_logged_in_users_status(user: dict = Depends(get_current_user_api_key)):
+    """Return the number of logged-in users."""
+    logger.info(f"User {user['username']} requested logged-in user status")
+    return check_logged_in_users()
+
+
+@router.get("/processes_check", response_model=ProcessStatus)
+async def get_process_status(user: dict = Depends(get_current_user_api_key)):
+    """Return process status for monitored processes."""
+    logger.info(f"User {user['username']} requested process status")
+    return check_processes()

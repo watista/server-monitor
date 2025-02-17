@@ -6,46 +6,47 @@ from config import config
 from services.logger import logger
 from services.models import (
     IPStatus,
-    DiskStatus,
+    DiskSpaceStatus,
     AptUpdateStatus,
     LoadStatus,
-    MemoryStatus
+    MemoryStatus,
+    LoggedInUsersStatus,
+    ProcessStatus
 )
 
 def check_ip() -> IPStatus:
-    """Check if public IP matches expected value."""
+    """Return the value of the current IP"""
     try:
         response = requests.get("https://api4.ipify.org?format=json")
         logger.debug(f"IP Check response: {response}")
         ip = response.json().get("ip")
-
-        if ip and ip != config.thresholds["ip_check"]:
-            logger.warning(f"IP Mismatch! Current: {ip}, Expected: {config.thresholds['ip_check']}")
-            return IPStatus(success=False, message=f"IP changed to {ip}")
-
-        return IPStatus(success=True, message="IP is stable")
+        return IPStatus(ip=str(ip))
 
     except Exception as e:
         logger.error(f"Failed to check IP: {e}")
-        return IPStatus(success=False, message="IP check failed")
+        return IPStatus(ip="-1")
 
 
-def check_disk() -> DiskStatus:
-    """Check if disk space is below threshold."""
-    alerts = []
+def check_disk() -> DiskSpaceStatus:
+    """Return a dictionary of monitored disks and their free space percentage."""
+    disk_info = {}
 
-    for disk in config.monitored_disks:
-        disk = disk.strip()
-        if not os.path.ismount(disk):
-            logger.warning(f"Skipping non-existent or unmounted disk: {disk}")
-            continue
+    try:
+        for disk in config.monitored_disks:
+            disk = disk.strip()
+            if not os.path.ismount(disk):
+                logger.warning(f"Skipping non-existent or unmounted disk: {disk}")
+                continue
 
-        usage = psutil.disk_usage(disk)
-        if usage.percent > (100 - config.thresholds["disk_space_threshold"]):
-            alerts.append(f"Low disk space on {disk} ({usage.percent}% used)")
+            usage = psutil.disk_usage(disk)
+            free_percentage = 100 - usage.percent  # Calculate free space percentage
+            disk_info[disk] = free_percentage
 
-    return DiskStatus(success=(not alerts), message=alerts or "All monitored disks have sufficient space")
+        return DiskSpaceStatus(disks=disk_info)
 
+    except Exception as e:
+        logger.error(f"Failed to check disks: {e}")
+        return DiskSpaceStatus(disks={"error": -1})
 
 def check_apt_updates() -> AptUpdateStatus:
     """Check for available APT package updates and count critical security updates."""
@@ -99,3 +100,37 @@ def check_memory() -> MemoryStatus:
     except Exception as e:
         logger.error(f"Failed to check memory: {e}")
         return MemoryStatus(available_ram=-1, total_ram=-1, available_swap=-1, total_swap=-1)
+
+
+def check_logged_in_users() -> LoggedInUsersStatus:
+    """Check the number of users currently logged into the system."""
+    try:
+        users = psutil.users()
+        usernames = list(set(user.name for user in users))
+        user_count = len(usernames)
+
+        logger.info(f"Logged-in Users: {user_count} - {usernames}")
+        return LoggedInUsersStatus(user_count=user_count, usernames=usernames)
+
+    except Exception as e:
+        logger.error(f"Failed to check logged-in users: {e}")
+        return LoggedInUsersStatus(user_count=-1, usernames=[])
+
+
+def check_processes() -> ProcessStatus:
+    """Check if the specified processes from ENV are running."""
+    process_status = {proc.strip(): False for proc in config.monitored_processes if proc.strip()}
+
+    try:
+        running_processes = {p.info["name"].lower() for p in psutil.process_iter(attrs=["name"])}
+
+        for proc in process_status.keys():
+            if proc.lower() in running_processes:
+                process_status[proc] = True
+
+        logger.info(f"Process Check: {process_status}")
+        return ProcessStatus(processes=process_status)
+
+    except Exception as e:
+        logger.error(f"Failed to check processes: {e}")
+        return ProcessStatus(processes={"error": False})

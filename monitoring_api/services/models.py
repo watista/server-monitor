@@ -1,13 +1,11 @@
 from pydantic import BaseModel
-from typing import Dict, List, Union
+from typing import Dict, List
 
 class IPStatus(BaseModel):
-    success: bool
-    message: str
+    ip: str
 
-class DiskStatus(BaseModel):
-    success: bool
-    message: Union[str, List[str]]
+class DiskSpaceStatus(BaseModel):
+    disks: Dict[str, float]
 
 class AptUpdateStatus(BaseModel):
     total_updates: int
@@ -24,9 +22,18 @@ class MemoryStatus(BaseModel):
     available_swap: float
     total_swap: float
 
+class LoggedInUsersStatus(BaseModel):
+    user_count: int
+    usernames: List[str]
+
+class ProcessStatus(BaseModel):
+    processes: Dict[str, bool]
+
 class MonitoringStatus(BaseModel):
     public_ip: IPStatus
-    disk_space: DiskStatus
+    disk_space: DiskSpaceStatus
     apt_updates: AptUpdateStatus
     load_status: LoadStatus
     memory_status: MemoryStatus
+    logged_in_user_status: LoggedInUsersStatus
+    process_status: ProcessStatus

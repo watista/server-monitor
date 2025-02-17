@@ -2,5 +2,6 @@
 - add oauth2 for authentication
 - add blocking for to many failed login attempts
 - add option to add every dot-env var as args
+- set backup for unset dot-env vars
 - add different dot-env file name possibilities
 -

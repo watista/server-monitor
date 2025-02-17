@@ -36,7 +36,7 @@ class Config:
         load_dotenv(dotenv_path=dotenv_path)
 
         # Validate required env vars
-        required_vars = ["API_KEY_ADMIN", "API_KEY_USER", "LOG_DIR", "LOG_FILENAME", "LOG_TYPE", "HOST_IP", "HOST_PORT", "DISK_SPACE_THRESHOLD", "MONITORED_DISKS"]
+        required_vars = ["API_KEY_ADMIN", "API_KEY_USER", "LOG_DIR", "LOG_FILENAME", "LOG_TYPE", "HOST_IP", "HOST_PORT", "MONITORED_DISKS", "MONITORED_PROCESSES"]
         missing_vars = [var for var in required_vars if not os.getenv(var)]
         if missing_vars:
             raise EnvironmentError(f"Missing required environment variables: {', '.join(missing_vars)}")
@@ -45,18 +45,8 @@ class Config:
             "admin": os.getenv("API_KEY_ADMIN"),
             "user": os.getenv("API_KEY_USER"),
         }
-
-        self.thresholds = {
-            "ip_check": "77.165.252.248",
-            "disk_space_threshold": int(os.getenv("DISK_SPACE_THRESHOLD", 2)),  # Default 2%
-            "memory_threshold": 25,  # in %
-            "load_1m": 30,
-            "load_5m": 20,
-            "load_15m": 10,
-            "max_logged_users": 2,
-        }
-
         self.monitored_disks = os.getenv("MONITORED_DISKS", "/").split(",")
+        self.monitored_processes = os.getenv("MONITORED_PROCESSES", "").split(",")
         self.log_dir = os.getenv("LOG_DIR")
         self.log_filename = os.getenv("LOG_FILENAME")
         self.log_type = os.getenv("LOG_TYPE")
