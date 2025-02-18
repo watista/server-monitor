@@ -59,7 +59,3 @@ class Config:
 
 # Global instance of Config
 config = Config()
-
-# Import logger AFTER config is fully initialized
-from services.logger import get_logger
-logger = get_logger()

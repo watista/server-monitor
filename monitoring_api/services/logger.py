@@ -6,80 +6,94 @@ import logging
 import logging.config
 
 
-def get_logger():
+class Logger:
+    """Singleton Logger class to manage application-wide logging."""
+    _instance = None
 
-    # Import inside function to break circular dependency
-    from config import config
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(Logger, cls).__new__(cls)
+            cls._instance._configure_logging()
+        return cls._instance
+    
+    def _configure_logging(self):
 
-    # Set log vars
-    LOG_TYPE = config.log_type.upper()
-    LOG_DIR = config.log_dir
-    LOG_FILENAME = config.log_filename
+        # Import inside function to break circular dependency
+        from config import config
 
-    # Create logs directory if not exists
-    if not os.path.exists(LOG_DIR):
-        os.makedirs(LOG_DIR)
+        # Set log vars
+        LOG_TYPE = config.log_type.upper()
+        LOG_DIR = config.log_dir
+        LOG_FILENAME = config.log_filename
 
-    # Choose handlers based on LOG_TYPE
-    active_handlers = ["console"]
-    if LOG_TYPE == "DEBUG":
-        active_handlers.append("debug_file")
-    else:
-        active_handlers.append("info_rotating_file")
+        # Create logs directory if not exists
+        if not os.path.exists(LOG_DIR):
+            os.makedirs(LOG_DIR)
 
-    LOGGING_CONFIG = {
-        "version": 1,
-        "disable_existing_loggers": False,
-        "formatters": {
-            "default": {
-                "format": "[%(asctime)s] [%(levelname)s] [%(name)s] - %(message)s",
-            },
-            "colored": {
-                "()": "colorlog.ColoredFormatter",
-                "format": "%(log_color)s[%(asctime)s] [%(levelname)s] [%(name)s] - %(message)s",
-                "log_colors": {
-                    "DEBUG": "cyan",
-                    "INFO": "green",
-                    "WARNING": "yellow",
-                    "ERROR": "red",
-                    "CRITICAL": "bold_white,bg_red",
+        # Choose handlers based on LOG_TYPE
+        active_handlers = ["console"]
+        if LOG_TYPE == "DEBUG":
+            active_handlers.append("debug_file")
+        else:
+            active_handlers.append("info_rotating_file")
+
+        LOGGING_CONFIG = {
+            "version": 1,
+            "disable_existing_loggers": False,
+            "formatters": {
+                "default": {
+                    "format": "[%(asctime)s] [%(levelname)s] [%(name)s] - %(message)s",
+                },
+                "colored": {
+                    "()": "colorlog.ColoredFormatter",
+                    "format": "%(log_color)s[%(asctime)s] [%(levelname)s] [%(name)s] - %(message)s",
+                    "log_colors": {
+                        "DEBUG": "cyan",
+                        "INFO": "green",
+                        "WARNING": "yellow",
+                        "ERROR": "red",
+                        "CRITICAL": "bold_white,bg_red",
+                    },
+                },
+                "extended": {
+                    "format": "[%(asctime)s] [%(levelname)s] [%(name)s] - %(message)s - [%(pathname)s - %(module)s - %(funcName)s - %(lineno)d]",
                 },
             },
-            "extended": {
-                "format": "[%(asctime)s] [%(levelname)s] [%(name)s] - %(message)s - [%(pathname)s - %(module)s - %(funcName)s - %(lineno)d]",
+            "handlers": {
+                "console": {
+                    "level": LOG_TYPE,
+                    "formatter": "colored",
+                    "class": "logging.StreamHandler",
+                },
+                "debug_file": {
+                    "level": "DEBUG",
+                    "formatter": "extended",
+                    "class": "logging.FileHandler",
+                    "filename": os.path.join(LOG_DIR, ("debug-" + LOG_FILENAME)),
+                    "mode": "a",
+                },
+                "info_rotating_file": {
+                    "level": "INFO",
+                    "formatter": "default",
+                    "class": "logging.handlers.RotatingFileHandler",
+                    "filename": os.path.join(LOG_DIR, LOG_FILENAME),
+                    "maxBytes": 10485760,
+                    "backupCount": 31,
+                },
             },
-        },
-        "handlers": {
-            "console": {
+            "root": {
                 "level": LOG_TYPE,
-                "formatter": "colored",
-                "class": "logging.StreamHandler",
+                "handlers": active_handlers,
             },
-            "debug_file": {
-                "level": "DEBUG",
-                "formatter": "extended",
-                "class": "logging.FileHandler",
-                "filename": os.path.join(LOG_DIR, ("debug-" + LOG_FILENAME)),
-                "mode": "a",
-            },
-            "info_rotating_file": {
-                "level": "INFO",
-                "formatter": "default",
-                "class": "logging.handlers.RotatingFileHandler",
-                "filename": os.path.join(LOG_DIR, LOG_FILENAME),
-                "maxBytes": 10485760,
-                "backupCount": 31,
-            },
-        },
-        "root": {
-            "level": LOG_TYPE,
-            "handlers": active_handlers,
-        },
-    }
+        }
 
-    logging.config.dictConfig(LOGGING_CONFIG)
-    logger = logging.getLogger("monitoring_api")
-    logger.setLevel(getattr(logging, LOG_TYPE, logging.INFO))
-    return logger
+        logging.config.dictConfig(LOGGING_CONFIG)
+        self.logger = logging.getLogger("monitoring_api")
+        self.logger.setLevel(getattr(logging, LOG_TYPE, logging.INFO))
+    
 
-logger = get_logger()
+    def get_logger(self):
+        """Returns the configured logger instance."""
+        return self.logger
+
+logger = Logger().get_logger()
