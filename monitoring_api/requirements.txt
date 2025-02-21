@@ -5,3 +5,8 @@ python-json-logger
 psutil
 requests
 colorlog
+python-jose[cryptography]
+python-multipart
+slowapi
+cachetools
+bcrypt

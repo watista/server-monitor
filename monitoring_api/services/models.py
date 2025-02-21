@@ -1,20 +1,27 @@
+#!/usr/bin/python3
+
 from pydantic import BaseModel
 from typing import Dict, List
+
 
 class IPStatus(BaseModel):
     ip: str
 
+
 class DiskSpaceStatus(BaseModel):
     disks: Dict[str, float]
+
 
 class AptUpdateStatus(BaseModel):
     total_updates: int
     critical_updates: int
 
+
 class LoadStatus(BaseModel):
     load_1m: float
     load_5m: float
     load_15m: float
+
 
 class MemoryStatus(BaseModel):
     available_ram: float
@@ -22,12 +29,15 @@ class MemoryStatus(BaseModel):
     available_swap: float
     total_swap: float
 
+
 class LoggedInUsersStatus(BaseModel):
     user_count: int
     usernames: List[str]
 
+
 class ProcessStatus(BaseModel):
     processes: Dict[str, bool]
+
 
 class MonitoringStatus(BaseModel):
     public_ip: IPStatus

@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import os
 import psutil
 import requests
@@ -14,11 +16,12 @@ from services.models import (
     ProcessStatus
 )
 
+
 def check_ip() -> IPStatus:
     """Return the value of the current IP"""
     try:
         response = requests.get("https://api4.ipify.org?format=json")
-        logger.debug(f"IP Check response: {response}")
+        logger.info(f"IP Check response: {response}")
         ip = response.json().get("ip")
         return IPStatus(ip=str(ip))
 
@@ -48,15 +51,19 @@ def check_disk() -> DiskSpaceStatus:
         logger.error(f"Failed to check disks: {e}")
         return DiskSpaceStatus(disks={"error": -1})
 
+
 def check_apt_updates() -> AptUpdateStatus:
     """Check for available APT package updates and count critical security updates."""
     try:
         # Run command to check for upgradable packages
-        result = subprocess.run(["apt", "list", "--upgradable"], capture_output=True, text=True)
-        lines = result.stdout.strip().split("\n")[1:]  # Skip first line (header)
+        result = subprocess.run(
+            ["apt", "list", "--upgradable"], capture_output=True, text=True)
+        lines = result.stdout.strip().split(
+            "\n")[1:]  # Skip first line (header)
 
         total_updates = len(lines)
-        critical_updates = sum(1 for line in lines if "security" in line.lower())
+        critical_updates = sum(
+            1 for line in lines if "security" in line.lower())
 
         logger.info(f"APT Updates: {total_updates} total, {critical_updates} critical")
         return AptUpdateStatus(total_updates=total_updates, critical_updates=critical_updates)
@@ -77,6 +84,7 @@ def check_load() -> LoadStatus:
     except Exception as e:
         logger.error(f"Failed to check system load: {e}")
         return LoadStatus(load_1m=-1, load_5m=-1, load_15m=-1)
+
 
 def check_memory() -> MemoryStatus:
     """Check available RAM and Swap memory."""
@@ -119,10 +127,12 @@ def check_logged_in_users() -> LoggedInUsersStatus:
 
 def check_processes() -> ProcessStatus:
     """Check if the specified processes from ENV are running."""
-    process_status = {proc.strip(): False for proc in config.monitored_processes if proc.strip()}
+    process_status = {
+        proc.strip(): False for proc in config.monitored_processes if proc.strip()}
 
     try:
-        running_processes = {p.info["name"].lower() for p in psutil.process_iter(attrs=["name"])}
+        running_processes = {p.info["name"].lower()
+                             for p in psutil.process_iter(attrs=["name"])}
 
         for proc in process_status.keys():
             if proc.lower() in running_processes:

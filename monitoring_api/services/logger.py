@@ -4,25 +4,26 @@ import os
 import colorlog
 import logging
 import logging.config
+from typing import Optional
 
 
 class Logger:
     """Singleton Logger class to manage application-wide logging."""
-    _instance = None
+    _instance: Optional["Logger"] = None
 
-    def __new__(cls):
+    def __new__(cls) -> "Logger":
         if cls._instance is None:
             cls._instance = super(Logger, cls).__new__(cls)
             cls._instance._configure_logging()
         return cls._instance
-    
-    def _configure_logging(self):
+
+    def _configure_logging(self) -> None:
 
         # Import inside function to break circular dependency
         from config import config
 
         # Set log vars
-        LOG_TYPE = config.log_type.upper()
+        LOG_LEVEL = config.log_level.upper()
         LOG_DIR = config.log_dir
         LOG_FILENAME = config.log_filename
 
@@ -30,9 +31,9 @@ class Logger:
         if not os.path.exists(LOG_DIR):
             os.makedirs(LOG_DIR)
 
-        # Choose handlers based on LOG_TYPE
+        # Choose handlers based on LOG_LEVEL
         active_handlers = ["console"]
-        if LOG_TYPE == "DEBUG":
+        if LOG_LEVEL == "DEBUG":
             active_handlers.append("debug_file")
         else:
             active_handlers.append("info_rotating_file")
@@ -61,7 +62,7 @@ class Logger:
             },
             "handlers": {
                 "console": {
-                    "level": LOG_TYPE,
+                    "level": LOG_LEVEL,
                     "formatter": "colored",
                     "class": "logging.StreamHandler",
                 },
@@ -82,18 +83,14 @@ class Logger:
                 },
             },
             "root": {
-                "level": LOG_TYPE,
+                "level": LOG_LEVEL,
                 "handlers": active_handlers,
             },
         }
 
         logging.config.dictConfig(LOGGING_CONFIG)
         self.logger = logging.getLogger("monitoring_api")
-        self.logger.setLevel(getattr(logging, LOG_TYPE, logging.INFO))
-    
+        self.logger.setLevel(getattr(logging, LOG_LEVEL, logging.INFO))
 
-    def get_logger(self):
-        """Returns the configured logger instance."""
-        return self.logger
 
 logger = Logger().get_logger()
