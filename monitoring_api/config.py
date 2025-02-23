@@ -22,8 +22,6 @@ class Config:
         parser = argparse.ArgumentParser(description="Server Monitor API")
         parser.add_argument("-v", "--verbose",
                             action="store_true", help="Enable console logging")
-        parser.add_argument("-e", "--env", type=str, choices=[
-                            "live", "dev"], help="Environment value: live / dev", required=True)
         parser.add_argument("--env-path", type=str,
                             help="Path to the env file")
         parser.add_argument("--log-dir", type=str,
@@ -69,9 +67,8 @@ class Config:
 
         # Assign values (CLI > .env > Defaults)
         self.verbose = args.verbose
-        self.env = get_env_var(args.env, "ENV", "dev")
         self.env_path = get_env_var(args.env_path, "ENV_PATH", ".env")
-        self.log_dir = get_env_var(args.log_dir, "LOG_DIR", "./logs")
+        self.log_dir = get_env_var(args.log_dir, "LOG_DIR", "/var/log/server-monitor-api")
         self.log_filename = get_env_var(
             args.log_filename, "LOG_FILENAME", "app.log")
         self.log_level = get_env_var(args.log_level, "LOG_LEVEL", "INFO")

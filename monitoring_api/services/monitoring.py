@@ -21,7 +21,7 @@ def check_ip() -> IPStatus:
     """Return the value of the current IP"""
     try:
         response = requests.get("https://api4.ipify.org?format=json")
-        logger.info(f"IP Check response: {response}")
+        logger.info(f"IP Check response: {response.text}")
         ip = response.json().get("ip")
         return IPStatus(ip=str(ip))
 

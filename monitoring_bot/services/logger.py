@@ -89,7 +89,9 @@ class Logger:
         }
 
         logging.config.dictConfig(LOGGING_CONFIG)
-        self.logger = logging.getLogger("monitoring_api")
+        logging.getLogger("httpx").setLevel(logging.WARNING)
+        logging.getLogger("apscheduler").setLevel(logging.WARNING)
+        self.logger = logging.getLogger("monitoring_bot")
         self.logger.setLevel(getattr(logging, LOG_LEVEL, logging.INFO))
 
 
