@@ -2,7 +2,7 @@
 
 import os
 import psutil
-import requests
+import aiohttp
 import subprocess
 from config import config
 from services.logger import logger
@@ -20,10 +20,14 @@ from services.models import (
 def check_ip() -> IPStatus:
     """Return the value of the current IP"""
     try:
-        response = requests.get("https://api4.ipify.org?format=json")
-        logger.info(f"IP Check response: {response.text}")
-        ip = response.json().get("ip")
-        return IPStatus(ip=str(ip))
+        async with aiohttp.ClientSession() as session:
+            async with session.get("https://api4.ipify.org?format=json") as response:
+                if not response.ok:
+                    logger.error(f"Not OK response for IPv4 GET. Error: {response.status_code} - {response.reason} - {response.text}")
+                    return IPStatus(ip="-1")
+                logger.info(f"IP Check response: {response.text}")
+                ip = response.json().get("ip")
+                return IPStatus(ip=str(ip))
 
     except Exception as e:
         logger.error(f"Failed to check IP: {e}")

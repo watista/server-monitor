@@ -1,6 +1,6 @@
-python-dotenv
-python-json-logger
-colorlog
-python-telegram-bot
-python-telegram-bot[job-queue]
-requests
+python-dotenv==1.0.1
+python-json-logger==3.2.1
+colorlog==6.9.0
+python-telegram-bot==21.10
+python-telegram-bot[job-queue]==21.10
+aiohttp==3.11.12
