@@ -55,11 +55,11 @@ class Status:
         logger.info(f"User invoked the '{type}_command' command. Username: {update.effective_user.first_name} User ID: {update.effective_user.id}")
 
         try:
-            all_status = self.api.get(type)
+            all_status = await self.api.get(type)
             if not all_status:
-                raise ValueError("API returned None for {type} command")
+                raise ValueError(f"API returned None for {type} command")
 
-            formatted_msg = await self.create_status_message(json.loads(all_status.text), type)
+            formatted_msg = await self.create_status_message(all_status, type)
             await self.function.send_message(formatted_msg, update, context)
 
         except Exception as e:

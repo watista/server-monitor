@@ -17,7 +17,7 @@ from services.models import (
 )
 
 
-def check_ip() -> IPStatus:
+async def check_ip() -> IPStatus:
     """Return the value of the current IP"""
     try:
         async with aiohttp.ClientSession() as session:
@@ -26,7 +26,8 @@ def check_ip() -> IPStatus:
                     logger.error(f"Not OK response for IPv4 GET. Error: {response.status_code} - {response.reason} - {response.text}")
                     return IPStatus(ip="-1")
                 logger.info(f"IP Check response: {response.text}")
-                ip = response.json().get("ip")
+                ip_response = await response.json()
+                ip = ip_response.get("ip")
                 return IPStatus(ip=str(ip))
 
     except Exception as e:
@@ -34,7 +35,7 @@ def check_ip() -> IPStatus:
         return IPStatus(ip="-1")
 
 
-def check_disk() -> DiskSpaceStatus:
+async def check_disk() -> DiskSpaceStatus:
     """Return a dictionary of monitored disks and their free space percentage."""
     disk_info = {}
 
@@ -56,7 +57,7 @@ def check_disk() -> DiskSpaceStatus:
         return DiskSpaceStatus(disks={"error": -1})
 
 
-def check_apt_updates() -> AptUpdateStatus:
+async def check_apt_updates() -> AptUpdateStatus:
     """Check for available APT package updates and count critical security updates."""
     try:
         # Run command to check for upgradable packages
@@ -77,7 +78,7 @@ def check_apt_updates() -> AptUpdateStatus:
         return AptUpdateStatus(total_updates=-1, critical_updates=-1)
 
 
-def check_load() -> LoadStatus:
+async def check_load() -> LoadStatus:
     """Check system load averages for the past 1, 5, and 15 minutes."""
     try:
         load_1m, load_5m, load_15m = os.getloadavg()
@@ -90,7 +91,7 @@ def check_load() -> LoadStatus:
         return LoadStatus(load_1m=-1, load_5m=-1, load_15m=-1)
 
 
-def check_memory() -> MemoryStatus:
+async def check_memory() -> MemoryStatus:
     """Check available RAM and Swap memory."""
     try:
         ram = psutil.virtual_memory()
@@ -114,7 +115,7 @@ def check_memory() -> MemoryStatus:
         return MemoryStatus(available_ram=-1, total_ram=-1, available_swap=-1, total_swap=-1)
 
 
-def check_logged_in_users() -> LoggedInUsersStatus:
+async def check_logged_in_users() -> LoggedInUsersStatus:
     """Check the number of users currently logged into the system."""
     try:
         users = psutil.users()
@@ -129,7 +130,7 @@ def check_logged_in_users() -> LoggedInUsersStatus:
         return LoggedInUsersStatus(user_count=-1, usernames=[])
 
 
-def check_processes() -> ProcessStatus:
+async def check_processes() -> ProcessStatus:
     """Check if the specified processes from ENV are running."""
     process_status = {
         proc.strip(): False for proc in config.monitored_processes if proc.strip()}

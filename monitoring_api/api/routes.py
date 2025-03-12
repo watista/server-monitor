@@ -92,13 +92,13 @@ async def get_status(request: Request, user: dict = Depends(get_current_user)) -
     """Return all system status in structured format."""
 
     checks = MonitoringStatus(
-        public_ip=check_ip(),
-        disk_space=check_disk(),
-        apt_updates=check_apt_updates(),
-        load_status=check_load(),
-        memory_status=check_memory(),
-        logged_in_user_status=check_logged_in_users(),
-        process_status=check_processes()
+        public_ip=await check_ip(),
+        disk_space=await check_disk(),
+        apt_updates=await check_apt_updates(),
+        load_status=await check_load(),
+        memory_status=await check_memory(),
+        logged_in_user_status=await check_logged_in_users(),
+        process_status=await check_processes()
     )
 
     logger.info(f"User {user['username']} requested all system status")
@@ -110,7 +110,7 @@ async def get_status(request: Request, user: dict = Depends(get_current_user)) -
 async def get_ip(request: Request, user: dict = Depends(get_current_user)) -> IPStatus:
     """Return ip check in structured format."""
     logger.info(f"User {user['username']} requested IP check")
-    return check_ip()
+    return await check_ip()
 
 
 @router.get("/status/disk", response_model=DiskSpaceStatus, dependencies=[Depends(get_current_user)])
@@ -118,7 +118,7 @@ async def get_ip(request: Request, user: dict = Depends(get_current_user)) -> IP
 async def get_disk(request: Request, user: dict = Depends(get_current_user)) -> DiskSpaceStatus:
     """Return disk check in structured format."""
     logger.info(f"User {user['username']} requested disk check")
-    return check_disk()
+    return await check_disk()
 
 
 @router.get("/status/apt", response_model=AptUpdateStatus, dependencies=[Depends(get_current_user)])
@@ -126,7 +126,7 @@ async def get_disk(request: Request, user: dict = Depends(get_current_user)) -> 
 async def get_apt(request: Request, user: dict = Depends(get_current_user)) -> AptUpdateStatus:
     """Return disk check in structured format."""
     logger.info(f"User {user['username']} requested APT check")
-    return check_apt_updates()
+    return await check_apt_updates()
 
 
 @router.get("/status/load", response_model=LoadStatus, dependencies=[Depends(get_current_user)])
@@ -134,7 +134,7 @@ async def get_apt(request: Request, user: dict = Depends(get_current_user)) -> A
 async def get_load(request: Request, user: dict = Depends(get_current_user)) -> LoadStatus:
     """Return system load status."""
     logger.info(f"User {user['username']} requested load status")
-    return check_load()
+    return await check_load()
 
 
 @router.get("/status/memory", response_model=MemoryStatus, dependencies=[Depends(get_current_user)])
@@ -142,7 +142,7 @@ async def get_load(request: Request, user: dict = Depends(get_current_user)) -> 
 async def get_memory(request: Request, user: dict = Depends(get_current_user)) -> MemoryStatus:
     """Return system memory status."""
     logger.info(f"User {user['username']} requested memory status")
-    return check_memory()
+    return await check_memory()
 
 
 @router.get("/status/users", response_model=LoggedInUsersStatus, dependencies=[Depends(get_current_user)])
@@ -150,7 +150,7 @@ async def get_memory(request: Request, user: dict = Depends(get_current_user)) -
 async def get_logged_in_users_status(request: Request, user: dict = Depends(get_current_user)) -> LoggedInUsersStatus:
     """Return the number of logged-in users."""
     logger.info(f"User {user['username']} requested logged-in user status")
-    return check_logged_in_users()
+    return await check_logged_in_users()
 
 
 @router.get("/status/processes", response_model=ProcessStatus, dependencies=[Depends(get_current_user)])
@@ -158,4 +158,4 @@ async def get_logged_in_users_status(request: Request, user: dict = Depends(get_
 async def get_process_status(request: Request, user: dict = Depends(get_current_user)) -> ProcessStatus:
     """Return process status for monitored processes."""
     logger.info(f"User {user['username']} requested process status")
-    return check_processes()
+    return await check_processes()

@@ -33,6 +33,16 @@ class Config:
         parser.add_argument("--api-user", type=str, help="User for the monitoring API")
         parser.add_argument("--api-password", type=str, help="Password for the monitoring API")
         parser.add_argument("--ip-threshold", type=str, help="IP to check")
+        parser.add_argument("--apt-threshold", type=str, help="APT packages threshold")
+        parser.add_argument("--apt-security-threshold", type=str, help="APT security packages threshold")
+        parser.add_argument("--disk-threshold", type=str, help="Free disk space threshold")
+        parser.add_argument("--load-1-threshold", type=str, help="1 min load threshold")
+        parser.add_argument("--load-5-threshold", type=str, help="5 min load threshold")
+        parser.add_argument("--load-15-threshold", type=str, help="15 min load threshold")
+        parser.add_argument("--ram-threshold", type=str, help="Free RAM threshold")
+        parser.add_argument("--swap-threshold", type=str, help="Free swap threshold")
+        parser.add_argument("--users-threshold", type=str, help="Logged in users threshold")
+        parser.add_argument("--alert-interval", type=str, help="Interval for alerts te be send in minutes")
         args = parser.parse_args()
 
         # Load .env file
@@ -57,6 +67,16 @@ class Config:
         self.api_user = get_env_var(args.api_user, "API_USER", "admin")
         self.api_password = get_env_var(args.api_password, "API_PASSWORD", "change-this-password")
         self.ip_threshold = get_env_var(args.ip_threshold, "IP_THRESHOLD", "0.0.0.0")
+        self.apt_threshold = get_env_var(args.apt_threshold, "APT_THRESHOLD", "10")
+        self.apt_security_threshold = get_env_var(args.apt_security_threshold, "1", "0.0.0.0")
+        self.disk_threshold = get_env_var(args.disk_threshold, "DISK_THRESHOLD", "5")
+        self.load_1_threshold = get_env_var(args.load_1_threshold, "LOAD_1_THRESHOLD", "5")
+        self.load_5_threshold = get_env_var(args.load_5_threshold, "LOAD_5_THRESHOLD", "3")
+        self.load_15_threshold = get_env_var(args.load_15_threshold, "LOAD_15_THRESHOLD", "2")
+        self.ram_threshold = get_env_var(args.ram_threshold, "RAM_THRESHOLD", "25")
+        self.swap_threshold = get_env_var(args.swap_threshold, "SWAP_THRESHOLD", "25")
+        self.users_threshold = get_env_var(args.users_threshold, "USERS_THRESHOLD", "2")
+        self.alert_interval = get_env_var(args.alert_interval, "ALERT_INTERVAL", "5")
 
 
 # Global instance of Config

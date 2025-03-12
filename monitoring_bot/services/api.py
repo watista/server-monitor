@@ -18,7 +18,7 @@ class Api:
         self.base_url = f"http://{config.api_address}:{str(config.api_port)}"
 
 
-    def token_check(self):
+    async def token_check(self):
 
         # Check if token is valid
         if not (self.token_timestamp + 3500) >= round(time.time()):
@@ -31,11 +31,11 @@ class Api:
                 async with aiohttp.ClientSession() as session:
                     async with session.post(f"{self.base_url}/api/auth/token", data=payload, headers={'Content-Type': 'application/x-www-form-urlencoded'}) as response:
                         if not response.ok:
-                            logger.error(f"Error while fetching new API token. Error: {response.status_code} - {response.reason}")
+                            logger.error(f"Error while fetching new API token. Error: {response.status} - {response.reason}")
                             return None
 
                         # Write token
-                        token = json.loads(response.text)
+                        token = await response.json()
                         self.token = token["access_token"]
                         self.token_timestamp = round(time.time())
 
@@ -48,10 +48,10 @@ class Api:
         return True
 
 
-    def get(self, path: str):
+    async def get(self, path: str):
 
         # Check if token is valid, otherwise renew
-        if not self.token_check():
+        if not await self.token_check():
             logger.warning("Token check failed, couldn't verify or refresh token")
             return None
 
@@ -60,7 +60,7 @@ class Api:
             async with aiohttp.ClientSession() as session:
                 async with session.get(f"{self.base_url}/api/status/{path}", headers={'Authorization': f'Bearer {self.token}'}) as response:
                     if not response.ok:
-                        logger.error(f"Not OK response for Api GET, path {path}. Error: {response.status_code} - {response.reason} - {response.text}")
+                        logger.error(f"Not OK response for Api GET, path: /{path}. Error: {response.status} - {response.reason} - {response.text}")
                         return None
 
                     return await response.json()

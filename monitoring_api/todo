@@ -1,2 +1,3 @@
 - make pep8 compliant
 - add comments in code
+- for each arg also a shorter version (eg --env-path == -e)

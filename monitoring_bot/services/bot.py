@@ -86,7 +86,7 @@ class Bot:
         self.application.job_queue.run_once(lambda _: self.application.create_task(self.publish_command_list()), when=0)
 
         # Enable the Schedule Job Queue
-        self.application.job_queue.run_repeating(self.monitor.check, interval=300, first=0)
+        self.application.job_queue.run_repeating(self.monitor.check, interval=3, first=0)
 
         # Start the bot
         self.application.run_polling(allowed_updates=Update.ALL_TYPES, poll_interval=1, timeout=5)
