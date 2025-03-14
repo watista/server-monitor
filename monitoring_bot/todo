@@ -1,3 +1,5 @@
 - alle endpoints nalopen als ze error teruggeven
 - for each arg also a shorter version (eg --env-path == -e)
+- alles met disk checken want op server zijn er meerdere dan op pc
+- add server name to config and alerts
 -

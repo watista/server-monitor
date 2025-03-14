@@ -60,7 +60,7 @@ class Api:
             async with aiohttp.ClientSession() as session:
                 async with session.get(f"{self.base_url}/api/status/{path}", headers={'Authorization': f'Bearer {self.token}'}) as response:
                     if not response.ok:
-                        logger.error(f"Not OK response for Api GET, path: /{path}. Error: {response.status} - {response.reason} - {response.text}")
+                        logger.error(f"Not OK response for API GET, path: /{path}. Error: {response.status} - {response.reason} - {response.text}")
                         return None
 
                     return await response.json()
