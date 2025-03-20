@@ -38,6 +38,7 @@ class Logger:
         else:
             active_handlers.append("info_rotating_file")
 
+        # Define the logging config
         LOGGING_CONFIG = {
             "version": 1,
             "disable_existing_loggers": False,
@@ -89,15 +90,17 @@ class Logger:
         }
 
         logging.config.dictConfig(LOGGING_CONFIG)
+        # Lower specifc loggers to only WARNING
         logging.getLogger("httpx").setLevel(logging.WARNING)
         logging.getLogger("apscheduler").setLevel(logging.WARNING)
+        # Set custom logger name and default log_level
         self.logger = logging.getLogger("monitoring_bot")
         self.logger.setLevel(getattr(logging, LOG_LEVEL, logging.INFO))
-
 
     def get_logger(self):
         """Returns the configured logger instance."""
         return self.logger
 
 
+# Global instance of Logger
 logger = Logger().get_logger()

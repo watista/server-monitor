@@ -1,4 +1,4 @@
 #!/usr/bin/python3
 
-# Define chat states
-VERIFY, REQUEST_ACCOUNT = range(2)
+# Define conversation states
+MUTE_OPTION, SELECT_DURATION, CUSTOM_DURATION, UNMUTE_OPTION = range(4)

@@ -4,23 +4,31 @@ import aiohttp
 import json
 import time
 import traceback
+from typing import Optional, Union, Dict, Any
 from config import config
 from services.logger import logger
 
+
 class Api:
+    """
+    Class responsible for API requests.
+    """
 
-    def __init__(self, functions):
-
-        # Set default values
+    def __init__(self, functions) -> None:
+        """
+        Initializes the API client.
+        :param functions: An object containing helper functions.
+        """
         self.function = functions
         self.token = 0
         self.token_timestamp = 0
         self.base_url = f"http://{config.api_address}:{str(config.api_port)}"
 
-
-    async def token_check(self):
-
-        # Check if token is valid
+    async def token_check(self) -> Optional[bool]:
+        """
+        Checks if the current token is valid, otherwise fetches a new one.
+        :return: True if the token is valid or successfully refreshed, None if an error occurs.
+        """
         if not (self.token_timestamp + 3500) >= round(time.time()):
 
             # Get new token
@@ -47,12 +55,15 @@ class Api:
         # Return success
         return True
 
-
-    async def get(self, path: str):
-
-        # Check if token is valid, otherwise renew
+    async def get(self, path: str) -> Optional[Union[Dict[str, Any], list]]:
+        """
+        Performs a GET request to the specified API endpoint.
+        :param path: The API path to request.
+        :return: The JSON response as a dictionary or list, or None if an error occurs.
+        """
         if not await self.token_check():
-            logger.warning("Token check failed, couldn't verify or refresh token")
+            logger.warning(
+                "Token check failed, couldn't verify or refresh token")
             return None
 
         # Make the request

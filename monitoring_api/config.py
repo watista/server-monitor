@@ -22,33 +22,33 @@ class Config:
         parser = argparse.ArgumentParser(description="Server Monitor API")
         parser.add_argument("-v", "--verbose",
                             action="store_true", help="Enable console logging")
-        parser.add_argument("--env-path", type=str,
-                            help="Path to the env file")
-        parser.add_argument("--log-dir", type=str,
-                            help="Directory for log files")
-        parser.add_argument("--log-filename", type=str, help="Log filename")
-        parser.add_argument("--log-level", type=str, choices=[
-                            "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="Log level")
-        parser.add_argument("--host-ip", type=str,
-                            help="API server IP address")
-        parser.add_argument("--host-port", type=int, help="API server port")
-        parser.add_argument("--monitored-disks", type=str,
-                            help="Comma-separated list of monitored disks")
-        parser.add_argument("--monitored-processes", type=str,
-                            help="Comma-separated list of monitored processes")
-        parser.add_argument("--oauth-secret-key", type=str,
-                            help="The secret key to encode JWT tokens")
-        parser.add_argument("--oauth-algorithm", type=str,
-                            help="OAuth2 algorithm to encode JWT tokens")
-        parser.add_argument("--oauth-token-expire", type=int,
-                            help="Time in minutes the OAuth2 token expires")
-        parser.add_argument("--api-rate-limit", type=int,
-                            help="Maximum request per second")
-        parser.add_argument("--failed-attempt-limit", type=int,
-                            help="Max failed attempts before blocking token request")
-        parser.add_argument("--block-time-minutes", type=int,
-                            help="Block duration in minutes")
-        parser.add_argument("--db-name", type=str, help="Name of the database")
+        parser.add_argument("-e", "--env-path", type=str,
+                            help="Path to the env file (default: .env)")
+        parser.add_argument("-l", "--log-dir", type=str,
+                            help="Directory for log files (default: /var/log/server-monitor-api)")
+        parser.add_argument("-f", "--log-filename", type=str, help="Log filename (default: app.log)")
+        parser.add_argument("-L", "--log-level", type=str, choices=[
+                            "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="Log level (default: INFO)")
+        parser.add_argument("-i", "--host-ip", type=str,
+                            help="API server IP address (default: 0.0.0.0)")
+        parser.add_argument("-p", "--host-port", type=int, help="API server port (default: 8000)")
+        parser.add_argument("-d", "--monitored-disks", type=str,
+                            help="Comma-separated list of monitored disks (default: /)")
+        parser.add_argument("-P", "--monitored-processes", type=str,
+                            help="Comma-separated list of monitored processes (default: )")
+        parser.add_argument("-s", "--oauth-secret-key", type=str,
+                            help="The secret key to encode JWT tokens (default: change-this-secret-key)")
+        parser.add_argument("-a", "--oauth-algorithm", type=str,
+                            help="OAuth2 algorithm to encode JWT tokens (default: HS256)")
+        parser.add_argument("-t", "--oauth-token-expire", type=int,
+                            help="Time in minutes the OAuth2 token expires (default: 60)")
+        parser.add_argument("-r", "--api-rate-limit", type=int,
+                            help="Maximum request per second (default: 5)")
+        parser.add_argument("-F", "--failed-attempt-limit", type=int,
+                            help="Max failed attempts before blocking token request (default: 5)")
+        parser.add_argument("-b", "--block-time-minutes", type=int,
+                            help="Block duration in minutes (default: 10)")
+        parser.add_argument("-D", "--db-name", type=str, help="Name of the database (default: users.db)")
         parser.add_argument("--add-users", action="store_true",
                             help="Add a new user to the database")
         parser.add_argument("--db-username", type=str,
@@ -79,13 +79,13 @@ class Config:
         self.monitored_processes = get_env_var(
             args.monitored_processes, "MONITORED_PROCESSES", "").split(",")
         self.oauth_secret_key = get_env_var(
-            args.oauth_secret_key, "OAUTH_SECRET_KEY", "please-change-this-secret-key")
+            args.oauth_secret_key, "OAUTH_SECRET_KEY", "change-this-secret-key")
         self.oauth_algorithm = get_env_var(
             args.oauth_algorithm, "OAUTH_ALGORITHM", "HS256")
         self.oauth_token_expire = get_env_var(
             args.oauth_token_expire, "OAUTH_TOKEN_EXPIRE", 60)
         self.api_rate_limit = get_env_var(
-            args.api_rate_limit, "API_RATE_LIMIT", 1)
+            args.api_rate_limit, "API_RATE_LIMIT", 5)
         self.failed_attempt_limit = get_env_var(
             args.failed_attempt_limit, "FAILED_ATTEMPT_LIMIT", 5)
         self.block_time_minutes = get_env_var(
