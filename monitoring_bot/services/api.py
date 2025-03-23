@@ -29,7 +29,7 @@ class Api:
         Checks if the current token is valid, otherwise fetches a new one.
         :return: True if the token is valid or successfully refreshed, None if an error occurs.
         """
-        if not (self.token_timestamp + 3500) >= round(time.time()):
+        if not (self.token_timestamp + 1500) >= round(time.time()):
 
             # Get new token
             payload = f"username={config.api_user}&password={config.api_password}"
