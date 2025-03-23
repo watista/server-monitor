@@ -1,0 +1,15 @@
+[Unit]
+Description=Server Monitor API
+After=network.target
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=/root/scripts/server-monitor/monitoring_api
+ExecStart=/root/scripts/server-monitor/monitoring_api/env/bin/python /root/scripts/server-monitor/monitoring_api/main.py
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+Alias=server-monitor-api.service

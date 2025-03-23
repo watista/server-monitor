@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, Request, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta
-from typing import Dict, Any
+from typing import Dict
 from auth import authenticate_user, create_access_token, get_current_user
 from services.monitoring import (
     check_ip,

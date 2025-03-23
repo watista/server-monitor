@@ -18,7 +18,7 @@ from services.models import (
 
 
 async def check_ip() -> IPStatus:
-    """Return the value of the current IP"""
+    """Return the value of the current public IP."""
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get("https://api4.ipify.org?format=json") as response:
@@ -47,7 +47,7 @@ async def check_disk() -> DiskSpaceStatus:
                 continue
 
             usage = psutil.disk_usage(disk)
-            free_percentage = 100 - usage.percent  # Calculate free space percentage
+            free_percentage = 100 - usage.percent
             disk_info[disk] = free_percentage
 
         return DiskSpaceStatus(disks=disk_info)
@@ -63,13 +63,12 @@ async def check_apt_updates() -> AptUpdateStatus:
         # Run command to check for upgradable packages
         result = subprocess.run(
             ["apt", "list", "--upgradable"], capture_output=True, text=True)
-        lines = result.stdout.strip().split(
-            "\n")[1:]  # Skip first line (header)
 
+        # Skip first line (header)
+        lines = result.stdout.strip().split("\n")[1:]
         total_updates = len(lines)
         critical_updates = sum(
             1 for line in lines if "security" in line.lower())
-
         logger.info(f"APT Updates: {total_updates} total, {critical_updates} critical")
         return AptUpdateStatus(total_updates=total_updates, critical_updates=critical_updates)
 
@@ -82,7 +81,6 @@ async def check_load() -> LoadStatus:
     """Check system load averages for the past 1, 5, and 15 minutes."""
     try:
         load_1m, load_5m, load_15m = os.getloadavg()
-
         logger.info(f"Load Averages - 1m: {load_1m}, 5m: {load_5m}, 15m: {load_15m}")
         return LoadStatus(load_1m=load_1m, load_5m=load_5m, load_15m=load_15m)
 
@@ -97,6 +95,7 @@ async def check_memory() -> MemoryStatus:
         ram = psutil.virtual_memory()
         swap = psutil.swap_memory()
 
+        # Calculate ram/swap in MB
         available_ram = ram.available / (1024 ** 2)
         total_ram = ram.total / (1024 ** 2)
         available_swap = swap.free / (1024 ** 2)

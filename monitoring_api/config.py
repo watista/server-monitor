@@ -26,16 +26,18 @@ class Config:
                             help="Path to the env file (default: .env)")
         parser.add_argument("-l", "--log-dir", type=str,
                             help="Directory for log files (default: /var/log/server-monitor-api)")
-        parser.add_argument("-f", "--log-filename", type=str, help="Log filename (default: app.log)")
+        parser.add_argument("-f", "--log-filename", type=str,
+                            help="Log filename (default: app.log)")
         parser.add_argument("-L", "--log-level", type=str, choices=[
                             "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="Log level (default: INFO)")
         parser.add_argument("-i", "--host-ip", type=str,
                             help="API server IP address (default: 0.0.0.0)")
-        parser.add_argument("-p", "--host-port", type=int, help="API server port (default: 8000)")
+        parser.add_argument("-p", "--host-port", type=int,
+                            help="API server port (default: 8000)")
         parser.add_argument("-d", "--monitored-disks", type=str,
                             help="Comma-separated list of monitored disks (default: /)")
         parser.add_argument("-P", "--monitored-processes", type=str,
-                            help="Comma-separated list of monitored processes (default: )")
+                            help="Comma-separated list of monitored processes (default: ssh)")
         parser.add_argument("-s", "--oauth-secret-key", type=str,
                             help="The secret key to encode JWT tokens (default: change-this-secret-key)")
         parser.add_argument("-a", "--oauth-algorithm", type=str,
@@ -48,7 +50,8 @@ class Config:
                             help="Max failed attempts before blocking token request (default: 5)")
         parser.add_argument("-b", "--block-time-minutes", type=int,
                             help="Block duration in minutes (default: 10)")
-        parser.add_argument("-D", "--db-name", type=str, help="Name of the database (default: users.db)")
+        parser.add_argument("-D", "--db-name", type=str,
+                            help="Name of the database (default: users.db)")
         parser.add_argument("--add-users", action="store_true",
                             help="Add a new user to the database")
         parser.add_argument("--db-username", type=str,
@@ -68,7 +71,8 @@ class Config:
         # Assign values (CLI > .env > Defaults)
         self.verbose = args.verbose
         self.env_path = get_env_var(args.env_path, "ENV_PATH", ".env")
-        self.log_dir = get_env_var(args.log_dir, "LOG_DIR", "/var/log/server-monitor-api")
+        self.log_dir = get_env_var(
+            args.log_dir, "LOG_DIR", "/var/log/server-monitor-api")
         self.log_filename = get_env_var(
             args.log_filename, "LOG_FILENAME", "app.log")
         self.log_level = get_env_var(args.log_level, "LOG_LEVEL", "INFO")
@@ -77,7 +81,7 @@ class Config:
         self.monitored_disks = get_env_var(
             args.monitored_disks, "MONITORED_DISKS", "/").split(",")
         self.monitored_processes = get_env_var(
-            args.monitored_processes, "MONITORED_PROCESSES", "").split(",")
+            args.monitored_processes, "MONITORED_PROCESSES", "ssh").split(",")
         self.oauth_secret_key = get_env_var(
             args.oauth_secret_key, "OAUTH_SECRET_KEY", "change-this-secret-key")
         self.oauth_algorithm = get_env_var(

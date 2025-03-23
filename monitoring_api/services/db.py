@@ -13,10 +13,12 @@ DB_FILE: str = config.db_name
 def init_db() -> None:
     """Check if database exists; if not, create users table."""
     try:
+        # Check if the database file exists
         if not os.path.exists(DB_FILE):
             logger.info("Database not found, creating new database...")
             with sqlite3.connect(DB_FILE) as conn:
                 cursor = conn.cursor()
+                # Create the users table if it doesn't already exist
                 cursor.execute("""
                     CREATE TABLE IF NOT EXISTS users (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -24,6 +26,7 @@ def init_db() -> None:
                         hashed_password TEXT NOT NULL
                     )
                 """)
+                # Commit changes to the database
                 conn.commit()
             logger.info("Database and users table created successfully.")
     except sqlite3.OperationalError as e:
@@ -38,6 +41,7 @@ def hash_password(password: str) -> str:
         if not password:
             logger.error("Attempted to hash an empty password")
             raise ValueError("Password cannot be empty")
+        # Generate a salt and hash the password
         hash_pwd = bcrypt.hashpw(password.encode(
             "utf-8"), bcrypt.gensalt()).decode("utf-8")
         logger.info("Successfully hashed a password")
@@ -53,6 +57,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
         if not plain_password or not hashed_password:
             logger.error("Password verification failed due to missing input")
             return False
+        # Compare the provided password with the stored hash
         ver_pwd = bcrypt.checkpw(plain_password.encode(
             "utf-8"), hashed_password.encode("utf-8"))
         logger.info("Successfully verified a password")
@@ -65,11 +70,14 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 def add_user(username: str, password: str) -> None:
     """Add a new user to the database with a hashed password."""
     try:
+        # Hash the user's password
         hashed_pwd = hash_password(password)
         with sqlite3.connect(DB_FILE) as conn:
             cursor = conn.cursor()
+            # Insert the user into the database
             cursor.execute(
                 "INSERT INTO users (username, hashed_password) VALUES (?, ?)", (username, hashed_pwd))
+            # Commit changes to the database
             conn.commit()
         logger.info(f"User '{username}' added successfully!")
     except sqlite3.IntegrityError:
@@ -79,15 +87,18 @@ def add_user(username: str, password: str) -> None:
 
 
 def get_user(username: str) -> Optional[Dict[str, Any]]:
-    """Retrieve user information from the database."""
+    """Retrieve user information (username and hashed password) from the database."""
     try:
+        # Connect to the database
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
+        # Query the database for the specified user
         cursor.execute(
             "SELECT username, hashed_password FROM users WHERE username = ?", (username,))
         user = cursor.fetchone()
         conn.close()
 
+        # Return user data if found, otherwise return None
         return {"username": user[0], "hashed_password": user[1]} if user else None
     except Exception as e:
         logger.error(f"Error retrieving user '{username}': {str(e)}")

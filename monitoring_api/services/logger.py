@@ -92,7 +92,6 @@ class Logger:
         self.logger = logging.getLogger("monitoring_api")
         self.logger.setLevel(getattr(logging, LOG_LEVEL, logging.INFO))
 
-
     def get_logger(self):
         """Returns the configured logger instance."""
         return self.logger

@@ -37,7 +37,8 @@ def main():
     # Add users to database file
     if config.add_users:
         if not config.db_username or not config.db_password:
-            logger.error("Both --db-username and --db-password must be provided when using --add-users")
+            logger.error(
+                "Both --db-username and --db-password must be provided when using --add-users")
             return
 
         add_user(config.db_username, config.db_password)

@@ -1,0 +1,15 @@
+[Unit]
+Description=Server Monitor Bot
+After=network.target
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=/root/scripts/server-monitor/monitoring_bot
+ExecStart=/root/scripts/server-monitor/monitoring_bot/env/bin/python /root/scripts/server-monitor/monitoring_bot/main.py
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+Alias=server-monitor-bot.service
