@@ -14,8 +14,8 @@ from services.db import get_user, verify_password
 # Load configuration values for authentication
 SECRET_KEY = config.oauth_secret_key
 ALGORITHM = config.oauth_algorithm
-FAILED_ATTEMPT_LIMIT = config.failed_attempt_limit
-BLOCK_TIME_MINUTES = config.block_time_minutes
+FAILED_ATTEMPT_LIMIT = int(config.failed_attempt_limit)
+BLOCK_TIME_MINUTES = int(config.block_time_minutes)
 
 # Cache to store failed login attempts with time-to-live (TTL) expiry
 failed_login_cache = TTLCache(maxsize=1000, ttl=BLOCK_TIME_MINUTES * 60)
@@ -65,7 +65,7 @@ def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta]
     """
     try:
         to_encode = data.copy()
-        expire = datetime.utcnow() + (expires_delta or timedelta(minutes=config.oauth_token_expire))
+        expire = datetime.utcnow() + (expires_delta or timedelta(minutes=int(config.oauth_token_expire)))
         # Add expiration time to the payload
         to_encode.update({"exp": expire})
         # Encode JWT
