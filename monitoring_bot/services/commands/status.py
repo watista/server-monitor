@@ -93,7 +93,7 @@ class Status:
             disks = get_section_value(json, "disk_space", "disks", {})
             message += "💾 *Disk Space:*\n"
             for disk, space in disks.items():
-                message += f" \- `{escape_markdown(disk, version=2)}`: {escape_markdown(str(round(space, 2)), version=2)}% free\n"
+                message += f" \\- `{escape_markdown(disk, version=2)}`: {escape_markdown(str(round(space, 2)), version=2)}% free\n"
             message += "\n"
 
         # APT Updates
@@ -102,14 +102,14 @@ class Status:
                 json, "apt_updates", "total_updates")
             critical_updates = get_section_value(
                 json, "apt_updates", "critical_updates")
-            message += f"📦 *APT Updates:*\n \- Total: `{total_updates}`\n \- Critical: `{critical_updates}`\n\n"
+            message += f"📦 *APT Updates:*\n \\- Total: `{total_updates}`\n \\- Critical: `{critical_updates}`\n\n"
 
         # Load Average
         if type in ["all", "load"]:
             load_1m = get_section_value(json, "load_status", "load_1m")
             load_5m = get_section_value(json, "load_status", "load_5m")
             load_15m = get_section_value(json, "load_status", "load_15m")
-            message += f"⚡ *Load Average:*\n \- 1m: `{load_1m}`\n \- 5m: `{load_5m}`\n \- 15m: `{load_15m}`\n\n"
+            message += f"⚡ *Load Average:*\n \\- 1m: `{load_1m}`\n \\- 5m: `{load_5m}`\n \\- 15m: `{load_15m}`\n\n"
 
         # Memory Usage
         if type in ["all", "memory"]:
@@ -121,8 +121,8 @@ class Status:
                 json, "memory_status", "available_swap") / 1024
             total_swap = get_section_value(
                 json, "memory_status", "total_swap") / 1024
-            message += f"🧠 *Memory:*\n \- Available RAM: `{round(available_ram)} GB`\n \- Total RAM: `{round(total_ram)} GB`\n"
-            message += f" \- Available Swap: `{round(available_swap)} GB`\n \- Total Swap: `{round(total_swap)} GB`\n\n"
+            message += f"🧠 *Memory:*\n \\- Available RAM: `{round(available_ram)} GB`\n \\- Total RAM: `{round(total_ram)} GB`\n"
+            message += f" \\- Available Swap: `{round(available_swap)} GB`\n \\- Total Swap: `{round(total_swap)} GB`\n\n"
 
         # Logged in Users
         if type in ["all", "users"]:
@@ -130,11 +130,11 @@ class Status:
                 json, "logged_in_user_status", "user_count")
             usernames = get_section_value(
                 json, "logged_in_user_status", "usernames", [])
-            message += f"👥 *Logged\-in Users:* `{user_count}`\n"
+            message += f"👥 *Logged\\-in Users:* `{user_count}`\n"
             if usernames:
-                message += " \- Users: " + ", ".join(usernames) + "\n\n"
+                message += " \\- Users: " + ", ".join(usernames) + "\n\n"
             else:
-                message += " \- No active users\n\n"
+                message += " \\- No active users\n\n"
 
         # Process Status
         if type in ["all", "processes"]:
@@ -143,6 +143,6 @@ class Status:
             message += f"⚙️ *Process Status:*\n"
             for process, status in processes.items():
                 emoji = "✅" if status else "❌"
-                message += f" \- {emoji} `{process}`\n"
+                message += f" \\- {emoji} `{process}`\n"
 
         return message

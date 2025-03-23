@@ -33,7 +33,7 @@ class Unmute:
         # If there are no muted alerts, inform the user and end the conversation
         if not muted_alerts:
             logger.info("No muted alerts to unmute")
-            await self.function.send_message("There are no muted alerts to unmute\.", context)
+            await self.function.send_message("There are no muted alerts to unmute\\.", context)
             return ConversationHandler.END
 
         logger.info(f"Muted alerts: {muted_alerts}")
@@ -65,6 +65,6 @@ class Unmute:
             )
         else:
             logger.error(f"Attempted to unmute non-existent alert: {alert_key}")
-            await self.function.send_message("Invalid alert selection\.", context)
+            await self.function.send_message("Invalid alert selection\\.", context)
 
         return ConversationHandler.END

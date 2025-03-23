@@ -124,5 +124,5 @@ class Bot:
 
     async def stop(self, update: Update, context: CallbackContext) -> None:
         """ Cancel command """
-        await self.function.send_message(f"Alright, command has been stopped\.", context)
+        await self.function.send_message(f"Alright, command has been stopped\\.", context)
         return ConversationHandler.END

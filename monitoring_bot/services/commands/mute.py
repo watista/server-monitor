@@ -28,7 +28,7 @@ class Mute:
         # Check if there are any active alerts
         if all(not v['active_alert'] for v in alerts.alerts.values()):
             logger.info("No active alerts to mute")
-            await self.function.send_message("There are no active alerts, nothing to mute\.", context)
+            await self.function.send_message("There are no active alerts, nothing to mute\\.", context)
             return ConversationHandler.END
 
         # List all active alerts

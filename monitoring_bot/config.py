@@ -33,7 +33,7 @@ class Config:
         parser.add_argument("-l", "--log-dir", type=str,
                             help="Directory for log files (default: /var/log/server-monitor-bot)")
         parser.add_argument("-f", "--log-filename", type=str,
-                            help="Log filename (default: app.log)")
+                            help="Log filename (default: app)")
         parser.add_argument("-L", "--log-level", type=str, choices=[
                             "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="Log level (default: INFO)")
         parser.add_argument("-t", "--bot-token", type=str,
@@ -96,7 +96,7 @@ class Config:
         self.log_dir = get_env_var(
             args.log_dir, "LOG_DIR", "/var/log/server-monitor-bot")
         self.log_filename = get_env_var(
-            args.log_filename, "LOG_FILENAME", "app.log")
+            args.log_filename, "LOG_FILENAME", "app")
         self.log_level = get_env_var(args.log_level, "LOG_LEVEL", "INFO")
         self.bot_token = get_env_var(
             args.bot_token, "BOT_TOKEN", "change-this-token")

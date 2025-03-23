@@ -12,7 +12,7 @@ To run the script the following variables are required, they can be set as an gl
 |n/a|-v", "--verbose",|n/a|Enable console logging|
 |ENV_PATH|-e", "--env-path"|.env|Path to the env file|
 |LOG_DIR|-l", "--log-dir"|/var/log/server-monitor-api|Directory for log files|
-|LOG_FILENAME|-f", "--log-filename"|app.log|Log filename|
+|LOG_FILENAME|-f", "--log-filename"|app|Log filename|
 |LOG_LEVEL|-L", "--log-level"|INFO|Log level|
 |HOST_IP|-i", "--host-ip"|0.0.0.0|API server IP address|
 |HOST_PORT|-p", "--host-port"|8000|API server port|

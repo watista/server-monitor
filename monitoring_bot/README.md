@@ -15,7 +15,7 @@ To run the script the following variables are required, they can be set as an gl
 |CHAT_ID|-i, --chat-id|0|User or group ID of the Telegram chat|
 |ALLOWED_USERS|-a, --allowed-users|0|Single or multiple Telegram IDs, seperated by a comma, for usage restriction|
 |LOG_DIR|-l, --log-dir|/var/log/server-monitor-bot|Directory for log files|
-|LOG_FILENAME|-f, --log-filename|app.log|Log filename|
+|LOG_FILENAME|-f, --log-filename|app|Log filename|
 |LOG_LEVEL|-L, --log-level|INFO|Log level|
 |BOT_TOKEN|-t, --bot-token|change-this-token|Live bot token|
 |BOT_TOKEN_DEV|-T, --bot-token-dev|change-this-token|Dev bot token|

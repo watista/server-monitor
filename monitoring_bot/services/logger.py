@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import os
+import time
 import colorlog
 import logging
 import logging.config
@@ -25,7 +26,7 @@ class Logger:
         # Set log vars
         LOG_LEVEL = config.log_level.upper()
         LOG_DIR = config.log_dir
-        LOG_FILENAME = config.log_filename
+        LOG_FILENAME = f"{config.log_filename}-{time.strftime('%d-%m-%Y')}.log"
 
         # Create logs directory if not exists
         if not os.path.exists(LOG_DIR):
