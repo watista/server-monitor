@@ -71,7 +71,7 @@ class Mute:
         ])
 
         # Prompt user to select which duration to mute the alert
-        await self.function.send_message("What should be de mute duration?", context, reply_markup)
+        await self.function.send_message("What should be the mute duration?", context, reply_markup)
         return SELECT_DURATION
 
     async def select_duration(self, update: Update, context: CallbackContext) -> Optional[int]:
