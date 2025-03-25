@@ -51,9 +51,10 @@ class Unmute:
     async def option_unmute(self, update: Update, context: CallbackContext) -> None:
         """ Handles the unmute selection """
 
-        # Save callback query and acknowledge the callback
+        # Save callback query, acknowledge the callback and remove the keyboard
         alert_key = update.callback_query.data
         await update.callback_query.answer()
+        await update.callback_query.edit_message_reply_markup(reply_markup=None)
         logger.info(f"User selected alert to unmute: {update.callback_query.data}")
 
         # Check if the selected alert exists, then unmute it

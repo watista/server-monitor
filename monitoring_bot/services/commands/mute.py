@@ -49,9 +49,10 @@ class Mute:
     async def option_mute(self, update: Update, context: CallbackContext) -> int:
         """ Handles alert selection for muting """
 
-        # Save callback query data (selected alert) and acknowledge the callback
+        # Save callback query, acknowledge the callback and remove the keyboard
         context.user_data["alert_key"] = update.callback_query.data
         await update.callback_query.answer()
+        await update.callback_query.edit_message_reply_markup(reply_markup=None)
         logger.info(f"User selected alert to mute: {update.callback_query.data}")
 
         # Provide mute duration options
@@ -77,9 +78,10 @@ class Mute:
     async def select_duration(self, update: Update, context: CallbackContext) -> Optional[int]:
         """ Handles mute duration selection """
 
-        # Save callback query and acknowledge the callback
+        # Save callback query, acknowledge the callback and remove the keyboard
         duration_data = update.callback_query.data
         await update.callback_query.answer()
+        await update.callback_query.edit_message_reply_markup(reply_markup=None)
         logger.info(f"User selected mute duration: {duration_data}")
 
         # If the user selects 'custom', ask for manual input
