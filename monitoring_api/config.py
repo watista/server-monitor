@@ -58,6 +58,10 @@ class Config:
                             help="Username for the new user")
         parser.add_argument("--db-password", type=str,
                             help="Password for the new user")
+        parser.add_argument("--tautulli-url", type=str,
+                            help="URL of the Tautulli instance (default: http://0.0.0.0:8181)")
+        parser.add_argument("--tautulli-api", type=str,
+                            help="Tautulli API key (default: change-this-api-key)")
         args = parser.parse_args()
 
         # Load .env file
@@ -98,6 +102,8 @@ class Config:
         self.add_users = args.add_users
         self.db_username = args.db_username
         self.db_password = args.db_password
+        self.tautulli_url = get_env_var(args.tautulli_url, "TAUTULLI_URL", "http://0.0.0.0:8181")
+        self.tautulli_api = get_env_var(args.tautulli_api, "TAUTULLI_API", "change-this-api-key")
 
 
 # Global instance of Config

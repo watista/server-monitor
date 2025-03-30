@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 from pydantic import BaseModel
-from typing import Dict, List
+from typing import Dict, List, Any
 
 
 class IPStatus(BaseModel):
@@ -37,6 +37,10 @@ class LoggedInUsersStatus(BaseModel):
 
 class ProcessStatus(BaseModel):
     processes: Dict[str, bool]
+
+
+class PlexStatus(BaseModel):
+    plex: Dict[str, Any]
 
 
 class MonitoringStatus(BaseModel):

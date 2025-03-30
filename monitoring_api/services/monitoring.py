@@ -13,7 +13,8 @@ from services.models import (
     LoadStatus,
     MemoryStatus,
     LoggedInUsersStatus,
-    ProcessStatus
+    ProcessStatus,
+    PlexStatus
 )
 
 
@@ -148,3 +149,23 @@ async def check_processes() -> ProcessStatus:
     except Exception as e:
         logger.error(f"Failed to check processes: {e}")
         return ProcessStatus(processes={"error": False})
+
+
+async def check_plex() -> PlexStatus:
+    """Check the current streaming status of Plex"""
+    url = f"{config.tautulli_url}/api/v2"
+
+    params = {
+        "apikey": config.tautulli_api,
+        "cmd": "get_activity"
+    }
+
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, params=params) as response:
+                data = await response.json()
+                return PlexStatus(plex=data)
+
+    except Exception as e:
+        logger.error(f"Failed to check Plex: {e}")
+        return PlexStatus(plex={"error": False})

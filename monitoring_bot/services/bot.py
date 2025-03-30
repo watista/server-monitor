@@ -7,6 +7,7 @@ from config import config
 from services.logger import logger
 from services.functions import Functions
 from services.commands.privacy import Privacy
+from services.commands.plex import Plex
 from services.commands.status import Status
 from services.commands.mute import Mute
 from services.commands.unmute import Unmute
@@ -32,6 +33,7 @@ class Bot:
         # Set classes
         self.function = Functions()
         self.privacy = Privacy(self.function)
+        self.plex = Plex(self.function)
         self.status = Status(self.function)
         self.mute = Mute(self.function)
         self.unmute = Unmute(self.function)
@@ -64,6 +66,8 @@ class Bot:
         ))
 
         # Add stand-alone handlers
+        self.application.add_handler(CommandHandler(
+            "plex", self.plex.plex, filters.User(self.allowed_users)))
         self.application.add_handler(CommandHandler(
             "status_all", self.status.all_command, filters.User(self.allowed_users)))
         self.application.add_handler(CommandHandler(
@@ -101,6 +105,7 @@ class Bot:
     async def publish_command_list(self) -> None:
         """ Create and publish command list """
         command_list = [
+            BotCommand("plex", "Get Plex stream status"),
             BotCommand("mute", "Select a alert to mute"),
             BotCommand("unmute", "Select a alert to unmute"),
             BotCommand("status_all", "Get info from all monitors"),

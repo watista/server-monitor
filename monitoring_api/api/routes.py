@@ -17,7 +17,8 @@ from services.monitoring import (
     check_load,
     check_memory,
     check_logged_in_users,
-    check_processes
+    check_processes,
+    check_plex
 )
 from services.models import (
     MonitoringStatus,
@@ -27,7 +28,8 @@ from services.models import (
     LoadStatus,
     MemoryStatus,
     LoggedInUsersStatus,
-    ProcessStatus
+    ProcessStatus,
+    PlexStatus
 )
 from config import config
 from services.logger import logger
@@ -159,3 +161,11 @@ async def get_process_status(request: Request, user: dict = Depends(get_current_
     """Return process status for monitored processes."""
     logger.info(f"User {user['username']} requested process status")
     return await check_processes()
+
+
+@router.get("/status/plex", response_model=PlexStatus, dependencies=[Depends(get_current_user)])
+@limiter.limit(rate_limit)
+async def get_plex_status(request: Request, user: dict = Depends(get_current_user)) -> PlexStatus:
+    """Return stream status for plex."""
+    logger.info(f"User {user['username']} requested plex status")
+    return await check_plex()
