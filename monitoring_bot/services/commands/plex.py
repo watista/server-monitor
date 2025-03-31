@@ -45,6 +45,10 @@ class Plex:
         """ Generates a formatted Telegram message with server status. """
         json = json["plex"]
         intro_message = f"📺 *Plex Stream Status* 📺\n"
+
+        if json['response']['data']['stream_count'] == "0":
+            return f"{intro_message}\nNo current streams\."
+
         message = f"Active Streams: {json['response']['data']['stream_count']}\n"
         message += f"Total bandwidth: {json['response']['data']['total_bandwidth']}\n\n"
 
@@ -55,8 +59,9 @@ class Plex:
             else:
                 message += f"{session.get('full_title', 'Unknown Title')}\n"
             message += f"{session.get('platform', 'Unknown Platform')} ({session.get('device', 'Unknown Device')} - {session.get('ip_address_public', 'Unknown IP Address')})\n"
-            message += f"Bandwidth: {session.get('bandwidth', 'Unknown Bandwidth')} - {session.get('quality_profile', 'Unknown Quality Profile')}\n\n"
+            message += f"Bandwidth: {session.get('bandwidth', 'Unknown Bandwidth')}\n"
+            message += f"Quality: {session.get('quality_profile', 'Unknown Quality Profile')} - {session.get('stream_video_resolution', 'Unknown Resolution')}p\n"
+            message += f"State: {session.get('state', 'Unknown State')}\n\n"
 
-        new_message = intro_message + escape_markdown(message, version=2)
-        return new_message
+        return intro_message + escape_markdown(message, version=2)
 
