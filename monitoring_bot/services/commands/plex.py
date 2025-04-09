@@ -60,7 +60,7 @@ class Plex:
                 message += f"{session.get('full_title', 'Unknown Title')}\n"
             message += f"{session.get('platform', 'Unknown Platform')} ({session.get('device', 'Unknown Device')} - {session.get('ip_address_public', 'Unknown IP Address')})\n"
             message += f"Bandwidth: {session.get('bandwidth', 'Unknown Bandwidth')}\n"
-            message += f"Quality: {session.get('quality_profile', 'Unknown Quality Profile')} - {session.get('stream_video_resolution', 'Unknown Resolution')}p\n"
+            message += f"Quality: {session.get('quality_profile', 'Unknown Quality Profile')} - {session.get('video_full_resolution', 'Unknown Resolution')}\n"
             message += f"State: {session.get('state', 'Unknown State')}\n\n"
 
         return intro_message + escape_markdown(message, version=2)
