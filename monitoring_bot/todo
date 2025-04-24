@@ -1,3 +1,2 @@
 - for each process a seperate monitor/alert
 - if api response is -1 wordt nog niet goed afgevangen
-- server load afronden 2 decimalen

@@ -9,6 +9,8 @@ from config import config
 from services.logger import logger
 from services.alerts import alerts
 from services.api import Api
+from services.commands.plex import Plex
+from telegram import Update
 
 
 class Monitor:
@@ -23,6 +25,7 @@ class Monitor:
         """
         self.function = functions
         self.api = Api(self.function)
+        self.plex = Plex(self.function)
 
     async def check(self, context: CallbackContext) -> None:
         """
@@ -129,7 +132,7 @@ class Monitor:
 
             # Generates a formatted list
             exceeded = [
-                f"{name.replace('_', ' ').capitalize()}: {value}"
+                f"{name.replace('_', ' ').capitalize()}: {round(value, 2)}"
                 for name, value in data.items()
                 if float(value) > float(thresholds[name])
             ]
@@ -137,6 +140,9 @@ class Monitor:
             # Sets the alert variables accordingly
             if exceeded:
                 await self.send_alert("\n".join(exceeded), alert_title, context)
+                # If all 3 loads exceeded, send Plex status msg
+                if len(exceeded) == 3:
+                    await self.plex.plex(Update, context)
                 alerts.alerts["load"]["active_alert"] = True
             else:
                 alerts.alerts["load"]["active_alert"] = False
