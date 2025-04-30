@@ -121,6 +121,6 @@ class Apt:
                 # Send the error message
                 await self.function.send_message(err_msg, context)
         else:
-            await self.function.send_message("Ok, no packages have been updated.", context)
+            await self.function.send_message("Ok, no packages have been updated\\.", context)
 
         return ConversationHandler.END
