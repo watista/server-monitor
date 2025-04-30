@@ -7,12 +7,13 @@ from config import config
 from services.logger import logger
 from services.functions import Functions
 from services.commands.privacy import Privacy
+from services.commands.update import Apt
 from services.commands.plex import Plex
 from services.commands.status import Status
 from services.commands.mute import Mute
 from services.commands.unmute import Unmute
 from services.monitor import Monitor
-from states import MUTE_OPTION, SELECT_DURATION, CUSTOM_DURATION, UNMUTE_OPTION
+from states import MUTE_OPTION, SELECT_DURATION, CUSTOM_DURATION, UNMUTE_OPTION, UPDATE_CHOICE
 
 from telegram import Update, BotCommand
 from telegram.ext import (
@@ -33,6 +34,7 @@ class Bot:
         # Set classes
         self.function = Functions()
         self.privacy = Privacy(self.function)
+        self.apt = Apt(self.function)
         self.plex = Plex(self.function)
         self.status = Status(self.function)
         self.mute = Mute(self.function)
@@ -50,19 +52,22 @@ class Bot:
                 CommandHandler("mute", self.mute.start_mute,
                                filters.User(self.allowed_users)),
                 CommandHandler("unmute", self.unmute.start_unmute,
+                               filters.User(self.allowed_users)),
+                CommandHandler("update", self.apt.start_update,
                                filters.User(self.allowed_users))
             ],
             states={
                 MUTE_OPTION: [CallbackQueryHandler(self.mute.option_mute)],
                 UNMUTE_OPTION: [CallbackQueryHandler(self.unmute.option_unmute)],
                 SELECT_DURATION: [CallbackQueryHandler(self.mute.select_duration)],
-                CUSTOM_DURATION: [MessageHandler(filters.ChatType.GROUPS & (filters.TEXT & ~filters.COMMAND), self.mute.custom_duration)]
+                CUSTOM_DURATION: [MessageHandler(filters.ChatType.GROUPS & (filters.TEXT & ~filters.COMMAND), self.mute.custom_duration)],
+                UPDATE_CHOICE: [CallbackQueryHandler(self.apt.choice_update)]
             },
             fallbacks=[
                 CommandHandler("stop", self.stop,
                                filters.User(self.allowed_users))
             ],
-            conversation_timeout=86400
+            conversation_timeout=300
         ))
 
         # Add stand-alone handlers
@@ -117,7 +122,8 @@ class Bot:
             BotCommand("status_users", "Get logged in users monitor info"),
             BotCommand("status_process",
                        "Get different processes monitor info"),
-            BotCommand("privacy", "Display the privacy policy")
+            BotCommand("privacy", "Display the privacy policy"),
+            BotCommand("update", "Update the server packages")
         ]
         await self.application.bot.set_my_commands(command_list)
 
