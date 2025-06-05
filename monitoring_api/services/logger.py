@@ -26,7 +26,7 @@ class Logger:
         # Set log vars
         LOG_LEVEL = config.log_level.upper()
         LOG_DIR = config.log_dir
-        LOG_FILENAME = f"{config.log_filename}-{time.strftime('%d-%m-%Y')}.log"
+        LOG_FILENAME = f"{config.log_filename}-{time.strftime('%m-%d-%Y')}.log"
 
         # Create logs directory if not exists
         if not os.path.exists(LOG_DIR):

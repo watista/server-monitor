@@ -1,3 +1,5 @@
 - for each process a seperate monitor/alert
 - if api response is -1 wordt nog niet goed afgevangen
--
+- update commando: wordt nu geen rekening gehouden met deffered packages
+- bij plex notificatie, jaartal als het een film is erbij zetten
+- command stil en superstil inbouwen
