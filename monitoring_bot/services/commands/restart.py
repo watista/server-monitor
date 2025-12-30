@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+import subprocess
+from subprocess import CalledProcessError
 from typing import Optional
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackContext, ConversationHandler
@@ -38,7 +40,7 @@ class Restart:
 
         # Create inline keyboard buttons for restarting each process
         reply_markup = InlineKeyboardMarkup([
-            [InlineKeyboardButton(f"Restart {alert}", callback_data=f"{alert}")]
+            [InlineKeyboardButton(f"{alert}", callback_data=f"{alert}")]
             for alert in process_list
         ])
 
@@ -68,13 +70,13 @@ class Restart:
             # Optionally, log or inspect result.stdout
             logger.info(f"Restart of {choice} succesfull:\n" + result.stdout)
             await self.function.send_message(
-                f"Service {choice} has been succesfully restarted\\.", context
+                f"Service {escape_markdown(choice, version=2)} has been succesfully restarted\\.", context
             )
         except CalledProcessError as e:
             # e.returncode is the exit status, e.stderr has the error output
             logger.error(f"Restarting of {choice} failed. (code {e.returncode}):\n{e.stderr}")
             err_msg = (
-                f"Restart of {choice} failed with error code {e.returncode}\\.\n"
+                f"Restart of {escape_markdown(choice, version=2)} failed with error code {e.returncode}\\.\n"
                 f"Error output:\n```\n{escape_markdown(e.stderr.strip(), version=2)}\n```"
             )
             # Send the error message

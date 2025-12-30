@@ -40,7 +40,7 @@ class Bot:
         self.status = Status(self.function)
         self.mute = Mute(self.function)
         self.unmute = Unmute(self.function)
-        self.restart = Unmute(self.function)
+        self.restart = Restart(self.function)
         self.monitor = Monitor(self.function)
         self.allowed_users = list(map(int, config.allowed_users.split(",")))
 
@@ -56,7 +56,7 @@ class Bot:
                 CommandHandler("unmute", self.unmute.start_unmute,
                                filters.User(self.allowed_users)),
                 CommandHandler("update", self.apt.start_update,
-                               filters.User(self.allowed_users))
+                               filters.User(self.allowed_users)),
                 CommandHandler("restart", self.restart.start_restart,
                                filters.User(self.allowed_users))
             ],
