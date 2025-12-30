@@ -12,8 +12,9 @@ from services.commands.plex import Plex
 from services.commands.status import Status
 from services.commands.mute import Mute
 from services.commands.unmute import Unmute
+from services.commands.restart import Restart
 from services.monitor import Monitor
-from states import MUTE_OPTION, SELECT_DURATION, CUSTOM_DURATION, UNMUTE_OPTION, UPDATE_CHOICE
+from states import MUTE_OPTION, SELECT_DURATION, CUSTOM_DURATION, UNMUTE_OPTION, UPDATE_CHOICE, RESTART_OPTION
 
 from telegram import Update, BotCommand
 from telegram.ext import (
@@ -39,6 +40,7 @@ class Bot:
         self.status = Status(self.function)
         self.mute = Mute(self.function)
         self.unmute = Unmute(self.function)
+        self.restart = Unmute(self.function)
         self.monitor = Monitor(self.function)
         self.allowed_users = list(map(int, config.allowed_users.split(",")))
 
@@ -55,13 +57,16 @@ class Bot:
                                filters.User(self.allowed_users)),
                 CommandHandler("update", self.apt.start_update,
                                filters.User(self.allowed_users))
+                CommandHandler("restart", self.restart.start_restart,
+                               filters.User(self.allowed_users))
             ],
             states={
                 MUTE_OPTION: [CallbackQueryHandler(self.mute.option_mute)],
                 UNMUTE_OPTION: [CallbackQueryHandler(self.unmute.option_unmute)],
                 SELECT_DURATION: [CallbackQueryHandler(self.mute.select_duration)],
                 CUSTOM_DURATION: [MessageHandler(filters.ChatType.GROUPS & (filters.TEXT & ~filters.COMMAND), self.mute.custom_duration)],
-                UPDATE_CHOICE: [CallbackQueryHandler(self.apt.choice_update)]
+                UPDATE_CHOICE: [CallbackQueryHandler(self.apt.choice_update)],
+                RESTART_OPTION: [CallbackQueryHandler(self.restart.choice_restart)]
             },
             fallbacks=[
                 CommandHandler("stop", self.stop,

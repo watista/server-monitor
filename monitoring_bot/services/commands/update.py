@@ -93,7 +93,7 @@ class Apt:
         choice = update.callback_query.data
         await update.callback_query.answer()
         await update.callback_query.edit_message_reply_markup(reply_markup=None)
-        logger.info(f"User chose to update packages: {update.callback_query.data}")
+        logger.info(f"User chose to update packages: {choice}")
 
         # Upgrade packages if answer was yes
         if choice == "yes":

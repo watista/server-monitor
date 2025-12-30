@@ -76,6 +76,8 @@ class Config:
                             help="Log retention days, for the privacy policy (default: 30)")
         parser.add_argument("-B", "--bot-owner", type=int,
                             help="Bot owner username, for the privacy policy (default: owner)")
+        parser.add_argument("--processes", type=str,
+                            help="List of processes to restart (default: None)")
         args = parser.parse_args()
 
         # Load .env file
@@ -135,6 +137,7 @@ class Config:
         self.log_retention = get_env_var(
             args.log_retention, "LOG_RETENTION", "30")
         self.bot_owner = get_env_var(args.bot_owner, "BOT_OWNER", "owner")
+        self.processes = get_env_var(args.processes, "PROCESSES", None)
 
 
 # Global instance of Config
