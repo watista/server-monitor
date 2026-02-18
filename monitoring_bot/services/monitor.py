@@ -42,10 +42,13 @@ class Monitor:
                 return None
 
             # Send an alert if the API response is empty
-            await self.send_alert("Monitor failed, empty response from API. See the logs for more info.", "Monitor Alert", context)
-            for key in alerts.alerts:
-                # Mark all alerts as active
-                alerts.alerts[key]["active_alert"] = True
+            alerts.mark_active("monitor")
+            if alerts.should_send("monitor"):
+                await self.send_alert(
+                    "Monitor failed, empty response from API. See the logs for more info.",
+                    "Monitor Alert",
+                    context
+                )
             return None
 
         # Define monitoring checks with associated handlers
@@ -61,22 +64,24 @@ class Monitor:
 
         # Loop through all checks and execute them if not muted
         for key, check in checks.items():
-            if not alerts.is_muted(key):
-                # Fetch data from API
-                data = await self.get_data(check["type"])
-                if data:
-                    # Call the appropriate handler
-                    await check["handler"](data, check["alert"], context)
+            data = await self.get_data(check["type"])
+            if data:
+                await check["handler"](data, check["alert"], context)
 
     async def handle_ip(self, data: dict, alert_title: str, context: CallbackContext) -> None:
         """Checks if the IP address matches the expected value."""
         try:
             # Generates a formatted message and sets the alert variables accordingly
             if str(data["ip"]) != str(config.ip_threshold):
-                await self.send_alert(f"Mismatch for IP check, current IP is: {data['ip']}", alert_title, context)
-                alerts.alerts["ip"]["active_alert"] = True
+                alerts.mark_active("ip")
+                if alerts.should_send("ip"):
+                    await self.send_alert(
+                        f"Mismatch for IP check, current IP is: {data['ip']}",
+                        alert_title,
+                        context
+                    )
             else:
-                alerts.alerts["ip"]["active_alert"] = False
+                alerts.reset_alert("ip")
         except KeyError as e:
             logger.error(f"Missing key in IP data: {e}")
 
@@ -92,10 +97,11 @@ class Monitor:
 
             # Sets the alert variables accordingly
             if low_disks:
-                await self.send_alert("\n".join(low_disks), alert_title, context)
-                alerts.alerts["disk"]["active_alert"] = True
+                alerts.mark_active("disk")
+                if alerts.should_send("disk"):
+                    await self.send_alert("\n".join(low_disks), alert_title, context)
             else:
-                alerts.alerts["disk"]["active_alert"] = False
+                alerts.reset_alert("disk")
         except KeyError as e:
             logger.error(f"Missing key in Disk data: {e}")
 
@@ -113,10 +119,13 @@ class Monitor:
 
             # Sets the alert variables accordingly
             if exceeded:
-                await self.send_alert("\n".join(exceeded), alert_title, context)
-                alerts.alerts["apt"]["active_alert"] = True
+                alerts.mark_active("load")
+                if alerts.should_send("load"):
+                    await self.send_alert("\n".join(exceeded), alert_title, context)
+                    if len(exceeded) == 3:
+                        await self.plex.plex(Update, context)
             else:
-                alerts.alerts["apt"]["active_alert"] = False
+                alerts.reset_alert("load")
         except KeyError as e:
             logger.error(f"Missing key in APT data: {e}")
 
@@ -139,13 +148,16 @@ class Monitor:
 
             # Sets the alert variables accordingly
             if exceeded:
-                await self.send_alert("\n".join(exceeded), alert_title, context)
-                # If all 3 loads exceeded, send Plex status msg
-                if len(exceeded) == 3:
-                    await self.plex.plex(Update, context)
-                alerts.alerts["load"]["active_alert"] = True
+                alerts.mark_active("load")
+
+                if alerts.should_send("load"):
+                    await self.send_alert("\n".join(exceeded), alert_title, context)
+
+                    # Only trigger Plex when we actually send an alert
+                    if len(exceeded) == 3:
+                        await self.plex.plex(Update, context)
             else:
-                alerts.alerts["load"]["active_alert"] = False
+                alerts.reset_alert("load")
         except KeyError as e:
             logger.error(f"Missing key in Load data: {e}")
 
@@ -165,10 +177,11 @@ class Monitor:
 
             # Sets the alert variables accordingly
             if exceeded:
-                await self.send_alert("\n".join(exceeded), alert_title, context)
-                alerts.alerts["memory"]["active_alert"] = True
+                alerts.mark_active("memory")
+                if alerts.should_send("memory"):
+                    await self.send_alert("\n".join(exceeded), alert_title, context)
             else:
-                alerts.alerts["memory"]["active_alert"] = False
+                alerts.reset_alert("memory")
         except KeyError as e:
             logger.error(f"Missing key in Memory data: {e}")
 
@@ -177,11 +190,12 @@ class Monitor:
         try:
             # Generates a formatted list and sets the alert variables accordingly
             if int(data['user_count']) > int(config.users_threshold):
-                msg = f"Too many users logged in ({data['user_count']}): {', '.join(data['usernames'])}"
-                await self.send_alert(msg, alert_title, context)
-                alerts.alerts["users"]["active_alert"] = True
+                alerts.mark_active("users")
+                if alerts.should_send("users"):
+                    msg = f"Too many users logged in ({data['user_count']}): {', '.join(data['usernames'])}"
+                    await self.send_alert(msg, alert_title, context)
             else:
-                alerts.alerts["users"]["active_alert"] = False
+                alerts.reset_alert("users")
         except KeyError as e:
             logger.error(f"Missing key in Users data: {e}")
 
@@ -194,12 +208,13 @@ class Monitor:
 
             # Generates a formatted list and sets the alert variables accordingly
             if failed_processes:
-                process_list = "\n".join([f"{process}" for process in failed_processes])
-                msg = f"The following processes are not running:\n{process_list}"
-                await self.send_alert(msg, alert_title, context)
-                alerts.alerts["processes"]["active_alert"] = True
+                alerts.mark_active("processes")
+                if alerts.should_send("processes"):
+                    process_list = "\n".join([f"{process}" for process in failed_processes])
+                    msg = f"The following processes are not running:\n{process_list}"
+                    await self.send_alert(msg, alert_title, context)
             else:
-                alerts.alerts["processes"]["active_alert"] = False
+                alerts.reset_alert("processes")
         except KeyError as e:
             logger.error(f"Missing key in Processes data: {e}")
 

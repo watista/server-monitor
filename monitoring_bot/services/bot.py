@@ -128,7 +128,8 @@ class Bot:
             BotCommand("status_process",
                        "Get different processes monitor info"),
             BotCommand("privacy", "Display the privacy policy"),
-            BotCommand("update", "Update the server packages")
+            BotCommand("update", "Update the server packages"),
+            BotCommand("restart", "Restart a process")
         ]
         await self.application.bot.set_my_commands(command_list)
 
