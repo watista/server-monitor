@@ -11,9 +11,9 @@ class Alerts:
     _instance: Optional["Alerts"] = None
 
     # Policy:
-    BURST_INTERVAL_SECONDS = 5 * 60
+    BURST_INTERVAL_SECONDS = 5
     BURST_MAX_SENDS = 3
-    STEADY_INTERVAL_SECONDS = 60 * 60
+    STEADY_INTERVAL_SECONDS = 3600
 
     def __new__(cls) -> "Alerts":
         """Ensures only one instance of Alerts exists (Singleton pattern)."""
