@@ -11,7 +11,7 @@ class Alerts:
     _instance: Optional["Alerts"] = None
 
     # Policy:
-    BURST_INTERVAL_SECONDS = 5
+    BURST_INTERVAL_SECONDS = 300
     BURST_MAX_SENDS = 3
     STEADY_INTERVAL_SECONDS = 3600
 
