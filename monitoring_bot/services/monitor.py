@@ -119,13 +119,11 @@ class Monitor:
 
             # Sets the alert variables accordingly
             if exceeded:
-                alerts.mark_active("load")
-                if alerts.should_send("load"):
+                alerts.mark_active("apt")
+                if alerts.should_send("apt"):
                     await self.send_alert("\n".join(exceeded), alert_title, context)
-                    if len(exceeded) == 3:
-                        await self.plex.plex(Update, context)
             else:
-                alerts.reset_alert("load")
+                alerts.reset_alert("apt")
         except KeyError as e:
             logger.error(f"Missing key in APT data: {e}")
 
