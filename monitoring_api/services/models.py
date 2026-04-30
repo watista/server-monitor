@@ -30,9 +30,9 @@ class LoadStatus(BaseModel):
 
 
 class MemoryStatus(BaseModel):
-    available_ram: float
+    used_ram: float
     total_ram: float
-    available_swap: float
+    used_swap: float
     total_swap: float
 
 

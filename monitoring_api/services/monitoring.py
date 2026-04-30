@@ -92,28 +92,28 @@ async def check_load() -> LoadStatus:
 
 
 async def check_memory() -> MemoryStatus:
-    """Check available RAM and Swap memory."""
+    """Check used RAM and total RAM, plus available/total swap."""
     try:
         ram = psutil.virtual_memory()
         swap = psutil.swap_memory()
 
         # Calculate ram/swap in MB
-        available_ram = ram.available / (1024 ** 2)
+        used_ram = ram.used / (1024 ** 2)
         total_ram = ram.total / (1024 ** 2)
-        available_swap = swap.free / (1024 ** 2)
+        used_swap = swap.used / (1024 ** 2)
         total_swap = swap.total / (1024 ** 2)
 
-        logger.info(f"Memory Check - RAM: {available_ram:.2f}/{total_ram:.2f} MB, Swap: {available_swap:.2f}/{total_swap:.2f} MB")
+        logger.info(f"Memory Check - RAM: {used_ram:.2f}/{total_ram:.2f} MB, Swap: {used_swap:.2f}/{total_swap:.2f} MB")
         return MemoryStatus(
-            available_ram=available_ram,
+            used_ram=used_ram,
             total_ram=total_ram,
-            available_swap=available_swap,
+            used_swap=used_swap,
             total_swap=total_swap
         )
 
     except Exception as e:
         logger.error(f"Failed to check memory: {e}")
-        return MemoryStatus(available_ram=-1, total_ram=-1, available_swap=-1, total_swap=-1)
+        return MemoryStatus(used_ram=-1, total_ram=-1, used_swap=-1, total_swap=-1)
 
 
 async def check_logged_in_users() -> LoggedInUsersStatus:

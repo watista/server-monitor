@@ -136,16 +136,16 @@ class Status:
 
         # Memory Usage
         if type in ["all", "memory"]:
-            available_ram = get_section_value(
-                json, "memory_status", "available_ram") / 1024
+            used_ram = get_section_value(
+                json, "memory_status", "used_ram") / 1024
             total_ram = get_section_value(
                 json, "memory_status", "total_ram") / 1024
-            available_swap = get_section_value(
-                json, "memory_status", "available_swap") / 1024
+            used_swap = get_section_value(
+                json, "memory_status", "used_swap") / 1024
             total_swap = get_section_value(
                 json, "memory_status", "total_swap") / 1024
-            message += f"🧠 *Memory:*\n \\- Available RAM: `{round(available_ram)} GB`\n \\- Total RAM: `{round(total_ram)} GB`\n"
-            message += f" \\- Available Swap: `{round(available_swap)} GB`\n \\- Total Swap: `{round(total_swap)} GB`\n\n"
+            message += f"🧠 *Memory:*\n \\- Used RAM: `{round(used_ram)} GB`\n \\- Total RAM: `{round(total_ram)} GB`\n"
+            message += f" \\- Used Swap: `{round(used_swap)} GB`\n \\- Total Swap: `{round(total_swap)} GB`\n\n"
 
         # Logged in Users
         if type in ["all", "users"]:
