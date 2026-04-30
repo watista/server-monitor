@@ -13,7 +13,7 @@ from services.commands.status import Status
 from services.commands.mute import Mute
 from services.commands.unmute import Unmute
 from services.commands.restart import Restart
-from services.commands.ipmi import Ipmi
+from services.commands.actions import Actions
 from services.monitor import Monitor
 from states import MUTE_OPTION, SELECT_DURATION, CUSTOM_DURATION, UNMUTE_OPTION, UPDATE_CHOICE, RESTART_OPTION
 
@@ -42,7 +42,7 @@ class Bot:
         self.mute = Mute(self.function)
         self.unmute = Unmute(self.function)
         self.restart = Restart(self.function)
-        self.ipmi = Ipmi(self.function)
+        self.actions = Actions(self.function)
         self.monitor = Monitor(self.function)
         self.allowed_users = list(map(int, config.allowed_users.split(",")))
 
@@ -99,9 +99,13 @@ class Bot:
         self.application.add_handler(CommandHandler(
             "privacy", self.privacy.privacy, filters.User(self.allowed_users)))
         self.application.add_handler(CommandHandler(
-            "stil", self.ipmi.stil, filters.User(self.allowed_users)))
+            "stil", self.actions.stil, filters.User(self.allowed_users)))
         self.application.add_handler(CommandHandler(
-            "heelstil", self.ipmi.heelstil, filters.User(self.allowed_users)))
+            "heelstil", self.actions.heelstil, filters.User(self.allowed_users)))
+        self.application.add_handler(CommandHandler(
+            "shutdown", self.actions.shutdown, filters.User(self.allowed_users)))
+        self.application.add_handler(CommandHandler(
+            "reboot", self.actions.reboot, filters.User(self.allowed_users)))
 
         # Add error handler
         self.application.add_error_handler(self.error_handler)
@@ -137,7 +141,9 @@ class Bot:
             BotCommand("update", "Update the server packages"),
             BotCommand("restart", "Restart a process"),
             BotCommand("stil", "Run IPMI raw fan command 0x16"),
-            BotCommand("heelstil", "Run IPMI raw fan command 0x04")
+            BotCommand("heelstil", "Run IPMI raw fan command 0x04"),
+            BotCommand("shutdown", "Shutdown the server now"),
+            BotCommand("reboot", "Reboot the server now")
         ]
         await self.application.bot.set_my_commands(command_list)
 
