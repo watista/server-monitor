@@ -93,7 +93,30 @@ class Status:
             disks = get_section_value(json, "disk_space", "disks", {})
             message += "💾 *Disk Space:*\n"
             for disk, space in disks.items():
-                message += f" \\- `{escape_markdown(disk, version=2)}`: {escape_markdown(str(round(space, 2)), version=2)}% free\n"
+                # Backwards compatible with older API responses (float percent only)
+                if isinstance(space, dict):
+                    free_percent = space.get("free_percent")
+                    free_gb = space.get("free_gb")
+
+                    if free_percent is None:
+                        free_percent = 0
+
+                    if free_gb is None:
+                        message += (
+                            f" \\- `{escape_markdown(disk, version=2)}`: "
+                            f"{escape_markdown(str(round(float(free_percent), 2)), version=2)}% free\n"
+                        )
+                    else:
+                        message += (
+                            f" \\- `{escape_markdown(disk, version=2)}`: "
+                            f"{escape_markdown(str(round(float(free_percent), 2)), version=2)}% free "
+                            f"\\({escape_markdown(str(round(float(free_gb), 1)), version=2)} GB\\)\n"
+                        )
+                else:
+                    message += (
+                        f" \\- `{escape_markdown(disk, version=2)}`: "
+                        f"{escape_markdown(str(round(float(space), 2)), version=2)}% free\n"
+                    )
             message += "\n"
 
         # APT Updates

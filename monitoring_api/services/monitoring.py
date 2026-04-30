@@ -37,7 +37,7 @@ async def check_ip() -> IPStatus:
 
 
 async def check_disk() -> DiskSpaceStatus:
-    """Return a dictionary of monitored disks and their free space percentage."""
+    """Return monitored disks with free percent and free space in GB."""
     disk_info = {}
 
     try:
@@ -49,13 +49,14 @@ async def check_disk() -> DiskSpaceStatus:
 
             usage = psutil.disk_usage(disk)
             free_percentage = 100 - usage.percent
-            disk_info[disk] = free_percentage
+            free_gb = usage.free / (1024 ** 3)
+            disk_info[disk] = {"free_percent": free_percentage, "free_gb": free_gb}
 
         return DiskSpaceStatus(disks=disk_info)
 
     except Exception as e:
         logger.error(f"Failed to check disks: {e}")
-        return DiskSpaceStatus(disks={"error": -1})
+        return DiskSpaceStatus(disks={"error": {"free_percent": -1, "free_gb": -1}})
 
 
 async def check_apt_updates() -> AptUpdateStatus:

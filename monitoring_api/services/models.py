@@ -1,15 +1,21 @@
 #!/usr/bin/python3
 
 from pydantic import BaseModel
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Union
 
 
 class IPStatus(BaseModel):
     ip: str
 
 
+class DiskUsage(BaseModel):
+    free_percent: float
+    free_gb: float
+
+
 class DiskSpaceStatus(BaseModel):
-    disks: Dict[str, float]
+    # Backwards compatible: older versions returned just a float percentage.
+    disks: Dict[str, Union[float, DiskUsage]]
 
 
 class AptUpdateStatus(BaseModel):
