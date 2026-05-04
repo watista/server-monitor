@@ -18,6 +18,7 @@ from services.monitor import Monitor
 from states import MUTE_OPTION, SELECT_DURATION, CUSTOM_DURATION, UNMUTE_OPTION, UPDATE_CHOICE, RESTART_OPTION
 
 from telegram import Update, BotCommand
+from telegram.helpers import escape_markdown
 from telegram.ext import (
     CommandHandler,
     filters,
@@ -110,9 +111,9 @@ class Bot:
         # Add error handler
         self.application.add_error_handler(self.error_handler)
 
-        # Run the publish command function
+        # Publish commands and notify the configured group chat after startup
         self.application.job_queue.run_once(
-            lambda _: self.application.create_task(self.publish_command_list()), when=0)
+            lambda _: self.application.create_task(self._after_start()), when=0)
 
         # Enable the Schedule Job Queue
         self.application.job_queue.run_repeating(
@@ -121,6 +122,34 @@ class Bot:
         # Start the bot
         self.application.run_polling(
             allowed_updates=Update.ALL_TYPES, poll_interval=1, timeout=5)
+
+    def _chat_id_configured(self) -> bool:
+        cid = config.chat_id
+        if cid is None:
+            return False
+        if isinstance(cid, int):
+            return cid != 0
+        s = str(cid).strip()
+        return bool(s) and s != "0"
+
+    async def _after_start(self) -> None:
+        await self.publish_command_list()
+        if not self._chat_id_configured():
+            return
+        try:
+            text = (
+                "*✅ Server Monitor bot started*\n\n"
+                f"Server: {escape_markdown(config.server_name, version=2)}\n"
+                f"Environment: {escape_markdown(str(config.env), version=2)}"
+            )
+            await self.application.bot.send_message(
+                chat_id=config.chat_id,
+                text=text,
+                parse_mode="MarkdownV2",
+                disable_web_page_preview=True,
+            )
+        except Exception as e:
+            logger.warning(f"Could not send startup message to chat {config.chat_id}: {e}")
 
     async def publish_command_list(self) -> None:
         """ Create and publish command list """

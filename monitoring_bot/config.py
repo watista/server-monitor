@@ -92,7 +92,7 @@ class Config:
         self.verbose = args.verbose
         self.env = get_env_var(args.env, "ENV", "dev")
         self.env_path = get_env_var(args.env_path, "ENV_PATH", ".env")
-        self.chat_id = get_env_var(args.env_path, "CHAT_ID", "0")
+        self.chat_id = get_env_var(args.chat_id, "CHAT_ID", "0")
         self.allowed_users = get_env_var(
             args.allowed_users, "ALLOWED_USERS", "0")
         self.log_dir = get_env_var(
