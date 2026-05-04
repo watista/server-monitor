@@ -85,8 +85,17 @@ class Status:
         # Public IP
         if type in ["all", "ip"]:
             public_ip = get_section_value(json, "public_ip", "ip", {})
-            ip_status = "✅" if public_ip == config.ip_threshold else "❌"
-            message += f"🌐{ip_status} *Public IP:* `{escape_markdown(public_ip, version=2)}`\n\n"
+            ip_ok = str(public_ip) == str(config.ip_threshold)
+            if ip_ok:
+                message += (
+                    f"🌐✅ *Public IP:* `{escape_markdown(str(public_ip), version=2)}`\n\n"
+                )
+            else:
+                message += (
+                    f"🌐❌ *Public IP mismatch*\n"
+                    f" \\- Current: `{escape_markdown(str(public_ip), version=2)}`\n"
+                    f" \\- Configured: `{escape_markdown(str(config.ip_threshold), version=2)}`\n\n"
+                )
 
         # Disk Space
         if type in ["all", "disk"]:
